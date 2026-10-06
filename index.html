@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#192166">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Вход Б">
+<title>Вход Б — Grand Azurro</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,600&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<style>
+  :root{
+    --navy:#192166; --teal:#00C4D0; --teal-deep:#009EBD;
+    --amber:#d97706; --red:#e4003a; --green:#3d9e4a;
+    --bg:#eef2f8; --surface:#ffffff; --border:rgba(25,33,102,0.12);
+    --navy-tint:rgba(25,33,102,0.06); --teal-tint:rgba(0,196,208,0.08);
+    --amber-tint:rgba(217,119,6,0.10); --red-tint:rgba(228,0,58,0.08); --green-tint:rgba(61,158,74,0.10);
+    --text:#192166; --muted:#7a85a8; --r:14px;
+    --grad-primary: linear-gradient(135deg, #192166 0%, #009EBD 55%, #00C4D0 100%);
+    --grad-soft: linear-gradient(135deg, rgba(25,33,102,0.06), rgba(0,196,208,0.10));
+  }
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;color-scheme:light only;background:#eef2f8;height:100%}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Nunito Sans',system-ui,sans-serif;font-size:15px;line-height:1.65;min-height:100vh;position:relative;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 60% 45% at 8% 10%, rgba(25,33,102,0.09) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 38% at 95% 85%, rgba(0,196,208,0.10) 0%, transparent 65%);}
+  body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:radial-gradient(circle, rgba(25,33,102,0.05) 1px, transparent 1px); background-size:30px 30px;}
+  .wrap{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:24px 18px 60px}
+
+  .brand{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+  .brand h1{font-family:'Lora',serif;font-weight:800;font-size:24px;line-height:1.2;color:var(--navy);letter-spacing:-0.02em}
+  .brand h1 em{display:block;font-style:italic;font-weight:600;color:var(--teal-deep)}
+  .brand span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+
+  .install-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--grad-soft);border:1px solid var(--border);border-radius:11px;padding:10px 14px;margin-bottom:18px;font-size:12px;font-weight:700;color:var(--navy)}
+  .install-btn{background:var(--navy);color:#fff;border:none;border-radius:7px;padding:8px 14px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito Sans',sans-serif;min-height:36px}
+  .install-dismiss{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px 6px;line-height:1}
+
+  .gate{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:26px 22px;box-shadow:0 2px 10px rgba(25,33,102,0.06)}
+  .gate p{color:var(--muted);font-size:14px;margin-bottom:18px}
+  .code-row{display:flex;gap:10px}
+  input#code{flex:1 1 auto;min-width:0;min-height:48px;font-family:'Lora',serif;font-size:22px;letter-spacing:4px;text-transform:uppercase;text-align:center;border:1.5px solid var(--border);border-radius:9px;padding:12px 10px;background:var(--bg);color:var(--navy);outline:none}
+  input#code:focus{border-color:var(--teal-deep);box-shadow:0 0 0 3px var(--teal-tint)}
+  button#enter{flex:0 0 auto;min-height:48px;min-width:64px;max-width:44vw;background:var(--grad-primary);color:#fff;border:none;border-radius:9px;padding:0 16px;font-weight:800;font-size:14px;cursor:pointer;font-family:'Nunito Sans',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  button#enter:disabled{opacity:.5;cursor:not-allowed}
+  .err{color:var(--red);font-size:13px;margin-top:12px;display:none}
+  .hidden{display:none}
+
+  .unit-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;margin-bottom:18px;overflow:hidden;box-shadow:0 10px 30px rgba(25,33,102,0.06)}
+  .unit-card .eyebrow-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+  .unit-card .eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;color:var(--teal-deep)}
+  .unit-card h2{font-family:'Lora',serif;font-size:26px;font-weight:700;color:var(--navy);margin-top:6px;line-height:1.25}
+  .unit-card .due{margin-top:14px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-top:1px solid var(--border);padding-top:14px}
+  .unit-card .due-left{min-width:0}
+  .unit-card .due-label{font-size:13px;color:var(--muted)}
+  .unit-card .due-meta{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .unit-card .due-amt{font-family:'Lora',serif;font-size:30px;font-weight:700;white-space:nowrap;line-height:1;flex:0 0 auto}
+  .due-amt.zero{color:var(--green)} .due-amt.owe{color:var(--red)}
+  .updated-badge{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:#47517f;background:#f1f4fa;border:1px solid var(--border);border-radius:20px;padding:5px 10px 5px 8px;white-space:nowrap}
+  .updated-badge .dot{width:6px;height:6px;border-radius:99px;background:var(--green);flex:0 0 auto}
+
+  .units-split{margin-top:12px;border:1px solid var(--border);border-radius:11px;overflow:hidden}
+  .units-split-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;font-size:13px;border-top:1px solid var(--border)}
+  .units-split-row:first-child{border-top:none}
+  .units-split-name{font-weight:700;color:var(--text);min-width:0}
+  .units-split-meta{display:block;font-size:11px;color:var(--muted);font-weight:500}
+  .units-split-amt{font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .units-split-amt.zero{color:var(--green)} .units-split-amt.owe{color:var(--red)}
+
+  .pay-box{margin:14px -22px -20px;padding:16px 22px 18px;border-top:1px solid var(--border);background:#f5f8fd;display:flex;flex-direction:column;gap:8px}
+  .pay-box .pay-heading{font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--navy);font-weight:800;margin-bottom:2px}
+  .pay-field{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:10px 12px}
+  .pay-field-main{flex:1 1 auto;min-width:0}
+  .pay-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+  .pay-val{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px;font-weight:600;color:var(--navy);letter-spacing:.02em;word-break:break-all;margin-top:2px}
+  .pay-val.pay-val-ref{font-family:'Nunito Sans',sans-serif;font-weight:700;letter-spacing:normal;word-break:normal;overflow-wrap:break-word;line-height:1.4}
+  .pay-copy{flex:0 0 auto;min-height:38px;background:var(--navy);color:#fff;border:none;border-radius:8px;padding:0 14px;font-weight:800;font-size:12px;cursor:pointer;font-family:'Nunito Sans',sans-serif;white-space:nowrap}
+  .pay-copy.alt{background:var(--surface);color:var(--navy);border:1px solid var(--border)}
+  .pay-note{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5}
+  .pay-copied{font-size:12px;color:var(--green);font-weight:700;margin-top:2px;display:none}
+  .pay-copied.show{display:block}
+
+  .section{margin-bottom:22px}
+  .section-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--teal-deep);font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .section-label::before{content:'';width:14px;height:2px;background:var(--teal);border-radius:2px}
+  .section-title{font-family:'Lora',serif;font-size:19px;font-weight:700;color:var(--navy);margin-bottom:12px}
+
+  .budget-grid{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:8px}
+  .budget-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px 6px;text-align:center;box-shadow:0 2px 8px rgba(25,33,102,0.04);min-width:0}
+  .budget-card .b-label{font-size:10px;text-transform:uppercase;color:var(--muted);letter-spacing:.06em;font-weight:700}
+  .budget-card .b-val{font-family:'Lora',serif;font-size:17px;font-weight:800;margin-top:4px;overflow-wrap:break-word}
+  .b-val.inc{color:var(--green)} .b-val.exp{color:var(--red)} .b-val.bal{color:var(--navy)}
+  .budget-card .b-sub{margin-top:6px;font-size:9.5px;color:var(--muted);line-height:1.55;font-weight:600}
+  .budget-card .b-sub b{color:var(--navy);font-weight:800}
+
+  .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:0 2px 10px rgba(25,33,102,0.05)}
+  .chart-box{position:relative;width:100%;height:220px}
+  .chart-box canvas{max-width:100%}
+  .chart-note{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+
+  .debtor-bars{display:flex;flex-direction:column;gap:10px}
+  .debtor-bar-row{display:flex;align-items:center;gap:10px}
+  .debtor-bar-id{min-width:38px;max-width:76px;flex:0 0 auto;font-size:12px;font-weight:800;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .debtor-bar-track{flex:1 1 auto;height:20px;background:var(--navy-tint);border-radius:5px;overflow:hidden;min-width:0}
+  .debtor-bar-fill{height:100%;border-radius:5px}
+  .debtor-bar-sum{width:70px;flex:0 0 auto;text-align:right;font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
+
+  .journal-row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+  .journal-row:last-child{border-bottom:none}
+  .j-left{color:var(--text);flex:1 1 auto;min-width:0}
+  .j-date{color:var(--muted);font-size:11px;display:block;margin-top:1px}
+  .j-amt{flex:0 0 auto;white-space:nowrap;text-align:right}
+  .j-amt.inc{color:var(--green);font-weight:800} .j-amt.exp{color:var(--red);font-weight:800}
+
+  .jgroup{border-bottom:1px solid var(--border)}
+  .jgroup:last-child{border-bottom:none}
+  .jgroup summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;font-size:13px}
+  .jgroup summary::-webkit-details-marker{display:none}
+  .jgroup summary .j-left{flex:1 1 auto;min-width:0}
+  .jgroup summary > div:last-child{flex:0 0 auto;white-space:nowrap}
+  .jgroup summary .jarrow{color:var(--muted);font-size:11px;transition:transform .15s;flex-shrink:0}
+  .jgroup[open] summary .jarrow{transform:rotate(180deg)}
+  .jgroup-sub{padding:0 0 10px}
+  .jgroup-item{display:flex;justify-content:space-between;gap:10px;padding:7px 0;font-size:12px;border-top:1px dashed var(--border)}
+  .jgroup-item-main{flex:1 1 auto;min-width:0;font-weight:600;color:var(--text)}
+  .jgroup-item-detail{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:1px}
+
+  .report-list{display:flex;flex-direction:column;gap:8px}
+  .report-list .journal-row{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px 14px;border-bottom:none;box-shadow:0 2px 8px rgba(25,33,102,0.04)}
+  .report-list .jgroup{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;border-bottom:none;box-shadow:0 2px 8px rgba(25,33,102,0.04)}
+  .report-list .jgroup summary{padding:13px 14px}
+  .report-list .jgroup-sub{padding:0 14px 10px;border-top:1px solid var(--border);margin-top:2px}
+  .report-list .jgroup-item{padding:9px 0}
+
+  .yearly-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:4px 14px;box-shadow:0 2px 10px rgba(25,33,102,0.05)}
+  .yearly-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--border)}
+  .yearly-row:last-child{border-bottom:none}
+  .yearly-year{font-size:14px;font-weight:700;color:var(--text)}
+  .yearly-inc{font-size:13px;font-weight:700;color:var(--green);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .yearly-exp{width:88px;text-align:right;font-size:13px;font-weight:700;color:var(--red);line-height:1.3;font-variant-numeric:tabular-nums}
+  .yearly-exp.missing{color:var(--muted);font-weight:600;font-size:12px}
+  .yearly-note{font-size:11.5px;line-height:1.5;color:var(--muted);padding:11px 0 13px}
+
+  .logout{text-align:center;margin-top:24px}
+  .logout button{min-height:44px;background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:8px 20px;border-radius:22px;font-size:13px;cursor:pointer;font-family:'Nunito Sans',sans-serif;font-weight:700}
+  .foot{margin-top:30px;text-align:left;font-size:12px;line-height:1.5;color:var(--muted)}
+
+  @media (max-width:380px){
+    .wrap{padding:20px 14px 50px}
+    .brand h1{font-size:20px}
+    .unit-card{padding:16px 16px}
+    .unit-card h2{font-size:22px}
+    .budget-card{padding:9px 4px}
+    .budget-card .b-val{font-size:13px}
+    .chart-box{height:190px}
+  }
+
+  .admin-toggle{width:100%;margin-bottom:22px;background:var(--grad-primary);color:#fff;border:none;border-radius:10px;padding:14px;font-weight:800;font-size:14px;cursor:pointer;font-family:'Nunito Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px}
+  #adminView{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:22px}
+  .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px}
+  .admin-header h3{font-family:'Lora',serif;font-size:19px;color:var(--navy);font-weight:700}
+  .print-btn{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Nunito Sans',sans-serif;min-height:44px}
+  .admin-close{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;font-family:'Nunito Sans',sans-serif;min-height:36px}
+  .print-date{font-size:12px;color:var(--muted);text-align:center;margin-bottom:14px}
+
+  .stat-strip{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+  .stat-chip{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 14px;text-align:left;min-width:0}
+  .stat-chip.full{grid-column:1 / -1;display:flex;align-items:center;gap:14px;text-align:left}
+  .stat-chip .stat-num{font-family:'Lora',serif;font-weight:800;font-size:19px;color:var(--navy);white-space:nowrap}
+  .stat-chip.warn .stat-num{color:var(--red)}
+  .stat-chip .stat-label{font-size:12px;font-weight:700;color:var(--text);margin-top:4px;line-height:1.3}
+  .stat-info{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0;margin-top:5px;line-height:1.4}
+  .stat-chip.full .stat-info{margin-top:0}
+
+  .runway-box{border-radius:11px;padding:12px 15px;margin-bottom:16px;font-size:12.5px;font-weight:700;display:flex;gap:9px;align-items:center}
+  .runway-box.danger{background:var(--red-tint);border:1px solid rgba(228,0,58,.3);color:#8f0028}
+  .runway-box.ok{background:var(--green-tint);border:1px solid rgba(61,158,74,.3);color:#1f5c2a}
+  .runway-box .dot{width:8px;height:8px;border-radius:99px;background:currentColor;flex:0 0 auto}
+
+  .contact-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:4px 14px;box-shadow:0 2px 10px rgba(25,33,102,0.05)}
+  .contact-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+  .contact-row:last-child{border-bottom:none}
+  .contact-role{font-weight:700;color:var(--text)}
+  .contact-note{font-size:11px;color:var(--muted);display:block;margin-top:1px}
+  .contact-call{background:var(--green-tint);color:#1f5c2a;border:1px solid rgba(61,158,74,.3);border-radius:20px;padding:7px 14px;font-size:12px;font-weight:800;text-decoration:none;min-height:36px;display:inline-flex;align-items:center;font-variant-numeric:tabular-nums}
+
+  .signal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;box-shadow:0 2px 10px rgba(25,33,102,0.05);display:flex;flex-direction:column;gap:10px}
+  .signal-row{display:flex;align-items:flex-start;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+  .signal-list:last-child .signal-row:last-child{border-bottom:none;padding-bottom:0}
+  .signal-text{font-size:13px;font-weight:700;color:var(--text);flex:1;min-width:0}
+  .signal-meta{font-size:11.5px;color:var(--muted);margin-top:2px;font-weight:400}
+  .signal-status{flex:0 0 auto;font-size:9.5px;font-weight:800;padding:4px 7px;border-radius:6px;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}
+  .signal-status.new{background:var(--amber-tint);color:#8a5205}
+  .signal-status.progress{background:var(--teal-tint);color:var(--teal-deep)}
+  .signal-status.done{background:var(--green-tint);color:#1f5c2a}
+  .signal-note{font-size:12px;color:var(--muted);margin-top:6px;font-style:italic}
+  .signal-resolve{margin-top:8px;background:var(--navy);color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Nunito Sans',sans-serif}
+
+  .signal-form{display:flex;flex-direction:column;gap:8px}
+  .signal-form-row{display:flex;gap:8px}
+  .signal-form input[type=text]{width:auto;max-width:45%;flex:0 1 120px;min-width:74px;min-height:46px;border:1.5px solid var(--border);border-radius:11px;padding:0 10px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;text-align:center;text-overflow:ellipsis}
+  .signal-form select{flex:1 1 auto;min-width:0;min-height:46px;border:1.5px solid var(--border);border-radius:11px;padding:0 10px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg)}
+  .signal-form textarea{width:100%;border:1.5px solid var(--border);border-radius:11px;padding:11px 12px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);resize:vertical;min-height:84px;outline:none}
+  .signal-form textarea:focus, .signal-form select:focus, .signal-form input:focus{border-color:var(--teal-deep);box-shadow:0 0 0 3px var(--teal-tint)}
+  .signal-submit{width:100%;min-height:50px;background:var(--navy);color:#fff;border:none;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer;font-family:'Nunito Sans',sans-serif}
+  .signal-msg{font-size:12px;margin-top:2px;display:none}
+  .signal-msg.ok{color:var(--green)} .signal-msg.error{color:var(--red)}
+  .signal-form-note{font-size:11.5px;line-height:1.5;color:var(--muted)}
+
+  .export-btn{width:100%;min-height:46px;margin-top:10px;background:var(--navy-tint);color:var(--navy);border:1px solid var(--border);border-radius:9px;font-weight:800;font-size:13px;cursor:pointer;font-family:'Nunito Sans',sans-serif}
+
+  .proto-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .proto-chip{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:6px 12px;min-height:30px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;font-family:'Nunito Sans',sans-serif}
+  .proto-chip.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .proto-type-chip{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;margin-left:6px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+  .proto-type-chip.regular{background:var(--green-tint);color:#1f5c2a}
+  .proto-type-chip.extra{background:var(--amber-tint);color:#8a5205}
+  .proto-row{display:none}
+  .proto-row.show{display:block}
+
+  .portal-nav{position:sticky;top:0;z-index:20;margin:0 -18px 18px;padding:12px 18px 10px;background:linear-gradient(rgba(238,242,248,0.88) 70%, rgba(238,242,248,0));backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);}
+  .portal-nav-inner{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .portal-nav-inner::-webkit-scrollbar{display:none}
+  .nav-pill{flex:0 0 auto;min-height:36px;display:inline-flex;align-items:center;padding:0 13px;border-radius:999px;background:var(--surface);color:var(--navy);font-size:12.5px;font-weight:700;text-decoration:none;border:1px solid var(--border);white-space:nowrap}
+
+  @media print{
+    body::before, body::after{display:none}
+    .brand, .install-banner, .admin-toggle, .admin-close, .print-btn, .unit-card, .stat-strip, .runway-box, .export-btn, .section:not(#printSection), .logout, .foot, .portal-nav{display:none !important}
+    #printSection{display:block !important}
+    .wrap{max-width:100%;padding:0}
+    #adminView{border:none;box-shadow:none;padding:0}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <h1>Вход Б<em>Grand Azurro</em></h1>
+    <span>Портал за собственици</span>
+  </div>
+
+  <div id="installBanner" class="install-banner hidden">
+    <span id="installText">📲 Инсталирай портала на началния екран за по-бърз достъп</span>
+    <div style="display:flex;gap:8px">
+      <button id="installBtn" class="install-btn hidden" onclick="doInstall()">Инсталирай</button>
+      <button class="install-dismiss" onclick="dismissInstall()">✕</button>
+    </div>
+  </div>
+
+  <div id="gate" class="gate">
+    <p>Въведи персоналния си код за достъп, за да видиш салдото и таксите на своя имот (апартамент или магазин).</p>
+    <div class="code-row">
+      <input id="code" maxlength="6" placeholder="КОД" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" inputmode="text">
+      <button id="enter" onclick="checkCode()">Влез</button>
+    </div>
+    <div class="err" id="err">Невалиден код. Провери го и опитай отново.</div>
+  </div>
+
+  <div id="result" class="hidden"></div>
+  <div class="foot">Данните не са в реално време — обновяват се веднъж месечно. В началото на всеки месец нанасяме плащанията от предходния, обичайно до 10-о число. Затова е нормално скорошен превод все още да не личи тук — ще е отразен при следващото обновяване.</div>
+</div>
+
+<script>
+// ⚠️ Постави тук .../exec линка от Apps Script деплоя на Вход Б.
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL5t3vhD_pIGULQOkytXsGq7d5dzVHPsct4vjRURhKISGiMWmFsnpNgpHppILCDb3h3A/exec";
+
+function fmt(n){ return (Number(n)||0).toLocaleString('bg-BG',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €'; }
+if (window.ChartDataLabels) { Chart.register(ChartDataLabels); }
+function monthLabel(key){
+  var parts = key.split('-'); var names=['Яну','Фев','Мар','Апр','Май','Юни','Юли','Авг','Сеп','Окт','Ное','Дек'];
+  return names[Number(parts[1])-1] + " '" + parts[0].slice(2);
+}
+// Кратко име на обект за графики/полета: "Апартамент Б12" -> "Б12", "Магазин Б3" -> "маг. Б3"
+function shortUnit(u){
+  return String(u || '').replace(/^Апартаменти?\s*/i, '').replace(/^Магазини?\s*/i, 'маг. ');
+}
+function parseFlexDate_(v){
+  if (v instanceof Date) return isNaN(v.getTime()) ? null : v;
+  var s = String(v || '').trim();
+  var m = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  if (m) return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+  var d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
+}
+function formatDateShort(v){
+  var d = parseFlexDate_(v);
+  if (!d) return String(v||'');
+  return String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
+}
+function yearlyFromTrend(trend){
+  var years = {};
+  (trend || []).forEach(function(x){
+    var y = x.month.split('-')[0];
+    if (!years[y]) years[y] = { income: 0, expense: 0 };
+    years[y].income += x.income; years[y].expense += x.expense;
+  });
+  return Object.keys(years).sort().map(function(y){ return { year: y, income: years[y].income, expense: years[y].expense }; });
+}
+
+function copyText_(text, msgId){
+  var msg = document.getElementById(msgId);
+  function shown(){ if (msg) { msg.classList.add('show'); setTimeout(function(){ msg.classList.remove('show'); }, 2500); } }
+  if (!text) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(shown).catch(function(){ fallbackCopy_(text, shown); });
+  } else { fallbackCopy_(text, shown); }
+}
+function copyIban(){ var el = document.getElementById('payIban'); copyText_(el ? el.textContent.trim() : '', 'payCopied'); }
+function copyRef(){ var el = document.getElementById('payRef'); copyText_(el ? el.textContent.trim() : '', 'payRefCopied'); }
+function fallbackCopy_(text, cb){
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  if (cb) cb();
+}
+
+function shortDetail_(note){
+  var s = String(note || '');
+  var idx = s.lastIndexOf(' — ');
+  return idx >= 0 ? s.slice(idx + 3) : s;
+}
+function monthKeyFromDate_(v){
+  var d = parseFlexDate_(v);
+  if (!d) return String(v || '');
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+}
+var MONTHS_LONG = ['януари','февруари','март','април','май','юни','юли','август','септември','октомври','ноември','декември'];
+function monthNameLong_(key){
+  var parts = String(key).split('-');
+  var name = MONTHS_LONG[Number(parts[1]) - 1];
+  return name ? (name + ' ' + parts[0]) : String(key);
+}
+function monthNameOnly_(key){
+  var parts = String(key).split('-');
+  return MONTHS_LONG[Number(parts[1]) - 1] || String(key);
+}
+// "Основание за превода" — обектът(ите) + период. Съдържа "Б", защото сметката е обща с Вход А и Сутерен.
+function buildPayRef_(unit, fromKey, toKey){
+  if (!fromKey || !toKey) return unit + ' — такса поддръжка';
+  if (fromKey === toKey) return unit + ' — такса за ' + monthNameLong_(fromKey);
+  var sameYear = fromKey.split('-')[0] === toKey.split('-')[0];
+  var fromLabel = sameYear ? monthNameOnly_(fromKey) : monthNameLong_(fromKey);
+  return unit + ' — такси за периода ' + fromLabel + ' - ' + monthNameLong_(toKey);
+}
+function groupJournalByMonth_(entries){
+  var byMonth = {};
+  (entries || []).forEach(function(j){
+    var mKey = monthKeyFromDate_(j.date);
+    if (!byMonth[mKey]) byMonth[mKey] = { items: [], total: 0 };
+    var m = String(j.note || '').match(/^\[(.+?)\]\s*(.*)$/);
+    var detail = m ? m[2] : j.note;
+    byMonth[mKey].items.push({ category: j.category, amount: j.amount, detail: detail, date: j.date });
+    byMonth[mKey].total += j.amount;
+  });
+  Object.keys(byMonth).forEach(function(k){
+    byMonth[k].items.sort(function(a, b){
+      var da = parseFlexDate_(a.date), db = parseFlexDate_(b.date);
+      return (db ? db.getTime() : 0) - (da ? da.getTime() : 0);
+    });
+  });
+  var now = new Date();
+  var groups = [];
+  for (var i = 0; i < 12; i++) {
+    var dt = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    var key = dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0');
+    var bucket = byMonth[key] || { items: [], total: 0 };
+    groups.push({ monthKey: key, items: bucket.items, total: bucket.total });
+  }
+  return groups;
+}
+
+function filterProtocols(btn, year){
+  document.querySelectorAll('.proto-chip').forEach(function(c){ c.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelectorAll('.proto-row').forEach(function(row){
+    row.classList.toggle('show', year === 'all' || row.getAttribute('data-year') === String(year));
+  });
+}
+
+function toggleAdmin(){
+  var el = document.getElementById('adminView');
+  var opening = el.classList.contains('hidden');
+  el.classList.toggle('hidden');
+  if (opening) {
+    document.getElementById('printDate').textContent = 'Актуално към ' + new Date().toLocaleDateString('bg-BG', {day:'2-digit', month:'long', year:'numeric'});
+    drawAdminChart(window.__lastData);
+    el.scrollIntoView({behavior:'smooth'});
+  }
+}
+
+function drawAdminChart(d){
+  var list = (d && d.allDebtors) || [];
+  var box = document.getElementById('allDebtorsBox');
+  if (window.__adminChart) { window.__adminChart.destroy(); window.__adminChart = null; }
+  if (!list.length) {
+    box.innerHTML = '<div class="chart-note" style="padding:30px 0">Няма обекти със задължения към момента. 🎉</div>';
+    return;
+  }
+  box.innerHTML = '<canvas id="allDebtorsChart"></canvas>';
+  box.style.height = Math.max(300, 34 * list.length) + 'px';
+  var ctx = document.getElementById('allDebtorsChart').getContext('2d');
+  var maxVal = Math.max.apply(null, list.map(function(x){ return x.due; }));
+  window.__adminChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: list.map(function(x){ return shortUnit(x.unit); }),
+      datasets: [{ label: 'Дължимо', data: list.map(function(x){ return x.due; }), backgroundColor: '#d97706', borderRadius: 4 }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      layout: { padding: { right: 55 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: function(ctx){ return ctx.parsed.x.toFixed(2) + ' €'; } } },
+        datalabels: {
+          anchor: 'end', align: 'right', clamp: true,
+          color: '#192166', font: { weight: '800', size: 12, family: 'Nunito Sans' },
+          formatter: function(v){ return v.toFixed(2) + ' €'; }
+        }
+      },
+      scales: {
+        x: { suggestedMax: maxVal * 1.2, ticks: { color: '#7a85a8', callback: function(v){ return v + ' €'; } }, grid: { color: 'rgba(25,33,102,0.08)' } },
+        y: { ticks: { color: '#192166', font: { weight: '700' } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+var IS_DEMO_MODE = SCRIPT_URL.indexOf('PASTE_YOUR') !== -1;
+
+async function loadStatus(code, silent){
+  var errEl = document.getElementById('err');
+  if (!silent) errEl.style.display = 'none';
+  if (IS_DEMO_MODE) {
+    if (!silent) { errEl.textContent = 'Порталът още не е свързан (липсва SCRIPT_URL).'; errEl.style.display = 'block'; }
+    return false;
+  }
+  try {
+    var res = await fetch(SCRIPT_URL + '?action=getStatus&code=' + encodeURIComponent(code));
+    var data = await res.json();
+    if (!data.ok) {
+      if (!silent) { errEl.textContent = data.error || 'Невалиден код.'; errEl.style.display = 'block'; }
+      return false;
+    }
+    window.__activeCode = code;
+    render(data);
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('result').classList.remove('hidden');
+    resetSessionTimer();
+    return true;
+  } catch (e) {
+    if (!silent) { errEl.textContent = 'Грешка при връзка. Опитай отново.'; errEl.style.display = 'block'; }
+    return false;
+  }
+}
+
+async function checkCode(){
+  var code = document.getElementById('code').value.trim().toUpperCase();
+  var btn = document.getElementById('enter');
+  if (!code) return;
+  btn.disabled = true; btn.textContent = 'Зареждане...';
+  await loadStatus(code, false);
+  btn.disabled = false; btn.textContent = 'Влез';
+}
+
+async function submitSignal(){
+  var textEl = document.getElementById('signalText');
+  var catEl = document.getElementById('signalCategory');
+  var msgEl = document.getElementById('signalMsg');
+  var text = textEl.value.trim();
+  if (!text) { msgEl.className = 'signal-msg error'; msgEl.textContent = 'Моля, опиши проблема.'; msgEl.style.display = 'block'; return; }
+  try {
+    var res = await fetch(SCRIPT_URL + '?action=submitSignal&code=' + encodeURIComponent(window.__activeCode) + '&text=' + encodeURIComponent(text) + '&category=' + encodeURIComponent(catEl.value));
+    var data = await res.json();
+    if (data.ok) {
+      msgEl.className = 'signal-msg ok'; msgEl.textContent = 'Сигналът е изпратен успешно.'; msgEl.style.display = 'block';
+      textEl.value = '';
+      await loadStatus(window.__activeCode, true);
+    } else {
+      msgEl.className = 'signal-msg error'; msgEl.textContent = data.error || 'Грешка при изпращане.'; msgEl.style.display = 'block';
+    }
+  } catch (e) {
+    msgEl.className = 'signal-msg error'; msgEl.textContent = 'Грешка при връзка.'; msgEl.style.display = 'block';
+  }
+}
+
+async function resolveSignal(id){
+  try {
+    var res = await fetch(SCRIPT_URL + '?action=resolveSignal&code=' + encodeURIComponent(window.__activeCode) + '&id=' + encodeURIComponent(id));
+    var data = await res.json();
+    if (data.ok) { await loadStatus(window.__activeCode, true); }
+    else { alert(data.error || 'Грешка.'); }
+  } catch (e) { alert('Грешка при връзка.'); }
+}
+
+function toCsvValue_(v){ var s = String(v == null ? '' : v).replace(/"/g, '""'); return '"' + s + '"'; }
+function downloadCsv_(filename, rows){
+  var csv = rows.map(function(r){ return r.map(toCsvValue_).join(','); }).join('\r\n');
+  var blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+async function exportCsv(){
+  try {
+    var res = await fetch(SCRIPT_URL + '?action=exportData&code=' + encodeURIComponent(window.__activeCode));
+    var data = await res.json();
+    if (!data.ok) { alert(data.error || 'Грешка при износ.'); return; }
+    var payRows = [['Дата','Обект','Сума','Валута','Начин','Бележка']].concat(
+      (data.payments||[]).map(function(p){ return [formatDateShort(p.date), p.unit, p.amount, p.currency, p.method, p.note]; })
+    );
+    downloadCsv_('vhodB_plashtania_' + todayStr_() + '.csv', payRows);
+    var budRows = [['Дата','Тип','Категория','Сума','Валута','Бележка']].concat(
+      (data.budget||[]).map(function(b){ return [formatDateShort(b.date), b.type, b.category, b.amount, b.currency, b.note]; })
+    );
+    downloadCsv_('vhodB_byudzhet_' + todayStr_() + '.csv', budRows);
+  } catch (e) { alert('Грешка при връзка.'); }
+}
+function todayStr_(){
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+var __sessionTimer = null;
+function resetSessionTimer(){
+  if (__sessionTimer) clearTimeout(__sessionTimer);
+  __sessionTimer = setTimeout(function(){
+    if (!document.getElementById('result').classList.contains('hidden')) {
+      alert('Сесията изтече поради неактивност. Ще влезеш отново с кода си.');
+      location.reload();
+    }
+  }, 10 * 60 * 1000);
+}
+['click','keydown','touchstart','scroll'].forEach(function(evt){
+  document.addEventListener(evt, function(){
+    if (!document.getElementById('result').classList.contains('hidden')) resetSessionTimer();
+  }, { passive: true });
+});
+
+function escapeHtml(v){ return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+var PORTAL_NAV_HTML = '<div class="portal-nav"><div class="portal-nav-inner">'
+  + '<a href="#imot" class="nav-pill">Моят имот</a>'
+  + '<a href="#finansi" class="nav-pill">Финанси</a>'
+  + '<a href="#arhiv" class="nav-pill">Архив</a>'
+  + '<a href="#pomosht" class="nav-pill">Помощ</a>'
+  + '</div></div>';
+
+function render(d){
+  window.__lastData = d;
+  var due = Number(d.due) || 0;
+  var totals = d.buildingTotals || {};
+  var multi = d.units && d.units.length > 1;
+
+  function subHtml(fro, tup){
+    return '<div class="b-sub"><div>ФРО: <b>' + fmt(fro || 0) + '</b></div><div>ТУП: <b>' + fmt(tup || 0) + '</b></div></div>';
+  }
+  var budgetHtml = '<div class="budget-grid">'
+    + '<div class="budget-card"><div class="b-label">Приходи</div><div class="b-val inc">' + fmt(totals.income) + '</div>' + subHtml(d.froCollected, d.maintenanceCollected) + '</div>'
+    + '<div class="budget-card"><div class="b-label">Разходи</div><div class="b-val exp">' + fmt(totals.expense) + '</div>' + subHtml(d.froExpense, d.maintenanceExpense) + '</div>'
+    + '<div class="budget-card"><div class="b-label">Каса</div><div class="b-val bal">' + fmt(totals.balance) + '</div>' + subHtml(d.froBalance, d.maintenanceBalance) + '</div>'
+    + '</div>';
+
+  var yearly = yearlyFromTrend(d.budgetTrend);
+  var yearlyRowsHtml = yearly.map(function(y){
+    var expCell = Math.abs(y.expense) < 0.005
+      ? '<div class="yearly-exp missing">няма<br>въведени</div>'
+      : '<div class="yearly-exp">-' + fmt(y.expense) + '</div>';
+    return '<div class="yearly-row"><div class="yearly-year">' + y.year + '</div>'
+      + '<div class="yearly-inc">+' + fmt(y.income) + '</div>' + expCell + '</div>';
+  }).join('');
+  var yearlyHtml = yearly.length
+    ? '<div class="yearly-card">' + yearlyRowsHtml + '<div class="yearly-note">„Няма въведени разходи" значи, че отчетът за годината още не е нанесен — не че входът не е харчил. Таксите до 2026 г. са нанесени обобщено по отчет, затова разпределението им по години е приблизително.</div></div>'
+    : '<div style="color:var(--muted);font-size:13px">Няма данни за нито една година.</div>';
+
+  var journalGroups = groupJournalByMonth_(d.recentJournal);
+  var journalHtml = journalGroups.map(function(g){
+    var mn = monthNameLong_(g.monthKey);
+    var monthTitle = mn.charAt(0).toUpperCase() + mn.slice(1);
+    if (!g.items.length) {
+      return '<details class="jgroup"><summary><div class="j-left">' + escapeHtml(monthTitle) + '<span class="j-date">Няма разходи</span></div>'
+        + '<div style="display:flex;align-items:center;gap:8px"><span class="j-amt" style="color:var(--muted)">—</span><span class="jarrow">▾</span></div></summary>'
+        + '<div class="jgroup-sub"><div class="jgroup-item" style="color:var(--muted);font-size:13px;padding:9px 0">Няма въведени разходи за този месец.</div></div></details>';
+    }
+    var groupMeta = g.items.length + (g.items.length === 1 ? ' запис' : ' записа');
+    var sub = g.items.map(function(it){
+      var shortD = shortDetail_(it.detail);
+      return '<div class="jgroup-item"><div class="jgroup-item-main">' + escapeHtml(it.category)
+        + (shortD ? '<span class="jgroup-item-detail">' + escapeHtml(shortD) + '</span>' : '') + '</div>'
+        + '<div class="j-amt exp">-' + fmt(it.amount) + '</div></div>';
+    }).join('');
+    return '<details class="jgroup"><summary><div class="j-left">' + escapeHtml(monthTitle) + '<span class="j-date">' + groupMeta + '</span></div>'
+      + '<div style="display:flex;align-items:center;gap:8px"><span class="j-amt exp">-' + fmt(g.total) + '</span><span class="jarrow">▾</span></div></summary>'
+      + '<div class="jgroup-sub">' + sub + '</div></details>';
+  }).join('');
+
+  var protoYears = Array.from(new Set((d.protocols || []).map(function(p){ var dt = parseFlexDate_(p.date); return dt ? dt.getFullYear() : null; }).filter(Boolean))).sort().reverse();
+  var protoFiltersHtml = protoYears.length > 1
+    ? '<div class="proto-filters"><button class="proto-chip active" onclick="filterProtocols(this,\'all\')">Всички</button>'
+      + protoYears.map(function(y){ return '<button class="proto-chip" onclick="filterProtocols(this,\'' + y + '\')">' + y + '</button>'; }).join('')
+      + '</div>'
+    : '';
+  var protocolsHtml = (d.protocols || []).map(function(p){
+    var linkHtml = (p.link && /^https?:\/\//.test(p.link)) ? ' · <a href="' + escapeHtml(p.link) + '" target="_blank" rel="noopener" style="color:var(--teal-deep);font-weight:700">Свали протокол ↗</a>' : '';
+    var dt = parseFlexDate_(p.date); var yr = dt ? dt.getFullYear() : '';
+    var typeCls = /извънредно/i.test(String(p.type || '')) ? 'extra' : 'regular';
+    return '<div class="journal-row proto-row show" data-year="' + yr + '" style="align-items:flex-start"><div class="j-left"><strong>' + escapeHtml(p.topics) + '</strong>'
+      + '<span class="j-date">' + escapeHtml(formatDateShort(p.date)) + '<span class="proto-type-chip ' + typeCls + '">' + escapeHtml(p.type) + '</span>' + linkHtml + '</span>'
+      + '<div style="font-size:12px;color:var(--muted);margin-top:4px">' + escapeHtml(p.decisions) + '</div></div></div>';
+  }).join('');
+  protocolsHtml = protoFiltersHtml + (protocolsHtml
+    ? '<div class="report-list">' + protocolsHtml + '</div>'
+    : '<div style="color:var(--muted);font-size:13px">Няма качени протоколи все още.</div>');
+
+  var s = d.stats || {};
+  var statStripHtml = !d.hasUnits ? '' : '<div class="stat-strip">'
+    + '<div class="stat-chip' + (s.paidThisMonth === 0 ? ' warn' : '') + '">'
+      + '<div class="stat-num">' + (s.paidThisMonth||0) + ' <span style="font-size:13px;color:var(--muted);font-weight:500">от ' + (s.totalUnits||0) + '</span></div>'
+      + '<div class="stat-label">обекта с плащане този месец</div>'
+      + '<div class="stat-info">Без имена — само по номер на обект.</div>'
+      + '</div>'
+    + '<div class="stat-chip' + (s.overdueMonths > 0 ? ' warn' : '') + '">'
+      + '<div class="stat-num">' + (s.overdueMonths||0) + ' <span style="font-size:13px;color:var(--muted);font-weight:500">от ' + (s.monthsSinceStart||0) + '</span></div>'
+      + '<div class="stat-label">твои неплатени месеца</div>'
+      + '<div class="stat-info">Второто число е откога дължиш такса.</div>'
+      + '</div>'
+    + '<div class="stat-chip full' + (due > 0 ? ' warn' : '') + '">'
+      + '<div class="stat-num">' + fmt(s.yearEndProjection) + '</div>'
+      + '<div class="stat-info"><strong style="color:var(--text)">Проекция до края на годината</strong> — ако не платиш нищо оттук насетне: текущ дълг + оставащите месечни такси.</div>'
+      + '</div>'
+    + '</div>';
+
+  var runwayHtml = '';
+  if (d.isAdmin && d.cashRunway) {
+    if (d.cashRunway.stable) {
+      runwayHtml = '<div class="runway-box ok"><span class="dot"></span><span>Финансите на входа са стабилни при текущия темп на разходи (последни 3 месеца).</span></div>';
+    } else {
+      var rdText = new Date(d.cashRunway.date).toLocaleDateString('bg-BG', {month:'long', year:'numeric'});
+      runwayHtml = '<div class="runway-box danger"><span class="dot"></span><span>При текущия темп на разходи и просрочия, касата на входа ще се изпразни до <strong>' + rdText + '</strong> (~' + d.cashRunway.months + ' месеца). Само за касиер/домоуправител — не се показва на собствениците.</span></div>';
+    }
+  }
+
+  var contactsHtml = (d.contacts || []).filter(function(c){ return c.phone; }).map(function(c){
+    var telHref = 'tel:' + String(c.phone).replace(/[^\d+]/g, '');
+    return '<div class="contact-row"><div><div class="contact-role">' + escapeHtml(c.role) + '</div>'
+      + (c.note ? '<span class="contact-note">' + escapeHtml(c.note) + '</span>' : '') + '</div>'
+      + '<a class="contact-call" href="' + telHref + '">📞 ' + escapeHtml(c.phone) + '</a></div>';
+  }).join('') || '<div style="color:var(--muted);font-size:13px">Няма въведени контакти все още.</div>';
+
+  var statusClassMap = { "Нов": "new", "В процес": "progress", "Решен": "done" };
+  var signalStatusLabelMap = { "Нов": "Нов", "В процес": "В работа", "Решен": "Решен" };
+  var signalsListHtml = (d.signals || []).map(function(sg){
+    var cls = statusClassMap[sg.status] || 'new';
+    var resolveBtn = (d.isAdmin && sg.status !== 'Решен') ? '<button class="signal-resolve" onclick="resolveSignal(\'' + escapeHtml(sg.id) + '\')">Маркирай решен</button>' : '';
+    return '<div class="signal-row">'
+      + '<span class="signal-status ' + cls + '">' + escapeHtml(signalStatusLabelMap[sg.status] || sg.status) + '</span>'
+      + '<div style="flex:1;min-width:0"><div class="signal-text">' + escapeHtml(sg.text) + '</div>'
+      + '<div class="signal-meta">' + escapeHtml(formatDateShort(sg.date)) + ' · подаден от ' + escapeHtml(sg.unit) + '</div>'
+      + (sg.note ? '<div class="signal-note">↳ ' + escapeHtml(sg.note) + '</div>' : '')
+      + resolveBtn + '</div></div>';
+  }).join('');
+  var signalsListWrapHtml = signalsListHtml ? '<div class="signal-list">' + signalsListHtml + '</div>' : '';
+
+  var ownUnitNo = shortUnit(d.unit);
+  var signalFormHtml = '<div class="signal-form">'
+    + '<div class="signal-form-row">'
+    + '<input type="text" value="' + escapeHtml(ownUnitNo) + '" readonly title="' + escapeHtml(d.unit) + '">'
+    + '<select id="signalCategory"><option value="Авария">Авария</option><option value="Осветление">Осветление</option><option value="Асансьор">Асансьор</option><option value="Чистота">Чистота</option><option value="Друго">Друго</option></select>'
+    + '</div>'
+    + '<textarea id="signalText" placeholder="Опиши накратко проблема (напр. изгоряла крушка на етаж 3)"></textarea>'
+    + '<button class="signal-submit" onclick="submitSignal()">Изпрати сигнал</button>'
+    + '<div class="signal-msg" id="signalMsg"></div>'
+    + '<div class="signal-form-note">Сигналът отива при домоуправителя и получава статус тук.</div>'
+    + '</div>';
+
+  var lastUpdatedText = d.lastUpdated ? formatDateShort(d.lastUpdated) : null;
+  var updatedBadgeHtml = lastUpdatedText ? '<div class="updated-badge"><span class="dot"></span>Обновено ' + escapeHtml(lastUpdatedText) + '</div>' : '<span></span>';
+
+  // Разбивка по обект, когато един собственик има няколко (един код за всички).
+  var splitHtml = '';
+  if (multi) {
+    splitHtml = '<div class="units-split">' + d.units.map(function(u){
+      return '<div class="units-split-row"><div class="units-split-name">' + escapeHtml(u.unit)
+        + '<span class="units-split-meta">' + fmt(u.fee) + '/мес.' + (u.overdueMonths > 0 ? ' · ' + u.overdueMonths + ' неплатени месеца' : '') + '</span></div>'
+        + '<div class="units-split-amt ' + (u.due > 0.009 ? 'owe' : 'zero') + '">' + (u.due > 0.009 ? fmt(u.due) : 'Платено') + '</div></div>';
+    }).join('') + '</div>';
+  }
+
+  var payBoxHtml = '';
+  if (due > 0 && d.bankIban && d.bankIban.toUpperCase().indexOf('ПОПЪЛНИ') === -1) {
+    var payRef = buildPayRef_(d.unit, d.unpaidFrom, d.unpaidTo);
+    payBoxHtml = '<div class="pay-box"><div class="pay-heading">Как да платя</div>'
+      + '<div class="pay-field"><div class="pay-field-main"><div class="pay-label">IBAN за такси</div><div class="pay-val" id="payIban">' + escapeHtml(d.bankIban) + '</div></div>'
+      + '<button class="pay-copy" onclick="copyIban()">📋 Копирай</button></div>'
+      + '<div class="pay-field"><div class="pay-field-main"><div class="pay-label">Основание за превода</div><div class="pay-val pay-val-ref" id="payRef">' + escapeHtml(payRef) + '</div></div>'
+      + '<button class="pay-copy alt" onclick="copyRef()">📋 Копирай</button></div>'
+      + '<div class="pay-copied" id="payCopied">✅ IBAN копиран</div>'
+      + '<div class="pay-copied" id="payRefCopied">✅ Основанието е копирано</div>'
+      + '<div class="pay-note">Плащанията се нанасят веднъж месечно, до 10-о число за предходния месец. Задължително посочвай <strong>Вход Б</strong> и обекта в основанието, както и периода, за който плащаш — сметката е обща за няколко входа.</div>'
+      + '</div>';
+  }
+
+  var unitCardHtml;
+  if (d.hasUnits) {
+    unitCardHtml = '<div class="unit-card">'
+      + '<div class="eyebrow-row"><div class="eyebrow">' + (multi ? 'Твоите имоти' : 'Твоят имот') + '</div>' + updatedBadgeHtml + '</div>'
+      + '<h2>' + escapeHtml(d.unit) + '</h2>'
+      + '<div class="due"><div class="due-left"><div class="due-label">Дължимо към момента' + (multi ? ' (общо)' : '') + '</div>'
+      + '<div class="due-meta">' + fmt(d.feePerMonth) + '/мес.' + (!multi && s.overdueMonths > 0 ? ' · ' + s.overdueMonths + ' неплатени месеца' : '') + '</div></div>'
+      + '<div class="due-amt ' + (due > 0 ? 'owe' : 'zero') + '">' + (due > 0 ? fmt(due) : 'Всичко платено') + '</div></div>'
+      + splitHtml
+      + payBoxHtml
+      + '</div>';
+  } else {
+    unitCardHtml = '<div class="unit-card"><div class="eyebrow-row"><div class="eyebrow">Административен достъп</div><span></span></div>'
+      + '<h2>' + escapeHtml(d.role) + ' — Вход Б</h2></div>';
+  }
+
+  document.getElementById('result').innerHTML = PORTAL_NAV_HTML
+    + '<div id="imot">'
+    + unitCardHtml
+    + statStripHtml
+    + runwayHtml
+    + (d.isAdmin ? '<button class="admin-toggle" id="adminToggleBtn" onclick="toggleAdmin()">📊 Разширен изглед — всички длъжници (' + escapeHtml(d.role) + ')</button>' : '')
+    + '<div id="adminView" class="hidden"><div id="printSection">'
+      + '<div class="print-date" id="printDate"></div>'
+      + '<div class="admin-header"><h3>Длъжници — Вход Б, Grand Azurro</h3>'
+      + '<div style="display:flex;gap:8px"><button class="print-btn" onclick="window.print()">🖨️ Принтирай</button><button class="admin-close" onclick="toggleAdmin()">Затвори</button></div></div>'
+      + '<div class="chart-box" id="allDebtorsBox"><canvas id="allDebtorsChart"></canvas></div>'
+      + '</div></div>'
+    + '</div>'
+    + '<div id="finansi">'
+    + '<div class="section"><div class="section-label">Прозрачност</div><div class="section-title">Топ длъжници <em style="color:var(--teal-deep);font-style:italic">(без имена)</em></div>'
+      + '<div class="chart-card" id="debtorsCard"></div></div>'
+    + '<div class="section"><div class="section-label">Финанси</div><div class="section-title">Бюджет на входа</div>' + budgetHtml
+      + '<div class="section-title" style="margin-top:26px">Приходи и разходи по месеци</div>'
+      + '<div style="font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:12px">Последните 6 месеца.</div>'
+      + '<div class="chart-card"><div class="chart-box"><canvas id="incomeExpenseChart"></canvas></div></div>'
+      + '<div class="section-title" style="margin-top:22px">Каса на входа</div>'
+      + '<div style="font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:12px">Наличност в касата — кумулативно през последните 6 месеца.</div>'
+      + '<div class="chart-card"><div class="chart-box" style="height:150px"><canvas id="cashChart"></canvas></div></div>'
+    + '</div>'
+    + '<div class="section"><div class="section-label">Отчетност</div><div class="section-title">Годишен отчет</div>' + yearlyHtml + '</div>'
+    + '<div class="section"><div class="section-label">Дневник</div><div class="section-title">Разходи по отчети</div><div class="report-list">' + journalHtml + '</div></div>'
+    + '</div>'
+    + '<div id="arhiv">'
+    + '<div class="section"><div class="section-label">Архив</div><div class="section-title">Протоколи от общи събрания</div>' + protocolsHtml + '</div>'
+    + '</div>'
+    + '<div id="pomosht">'
+    + '<div class="section"><div class="section-label">Помощ</div><div class="section-title">Важни телефони</div><div class="contact-card">' + contactsHtml + '</div></div>'
+    + '<div class="section"><div class="section-label">Поддръжка</div><div class="section-title">Сигнали за повреди</div>'
+      + '<div class="signal-card">' + signalsListWrapHtml + signalFormHtml + '</div></div>'
+    + '</div>'
+    + (d.isAdmin ? '<button class="export-btn" onclick="exportCsv()">📥 Изтегли всички данни (CSV)</button>' : '')
+    + '<div class="logout"><button onclick="location.reload()">Изход</button></div>';
+
+  drawCharts(d);
+}
+
+function drawCharts(d){
+  var red = '#e4003a', green = '#3d9e4a', amber='#d97706', muted = '#7a85a8', gridColor='rgba(25,33,102,0.08)';
+
+  var debtorsCard = document.getElementById('debtorsCard');
+  if (d.debtorsChart && d.debtorsChart.length) {
+    var maxVal1 = Math.max.apply(null, d.debtorsChart.map(function(x){ return x.due; }));
+    debtorsCard.innerHTML = '<div class="debtor-bars">' + d.debtorsChart.map(function(x, i){
+      var pct = maxVal1 > 0 ? Math.max(4, Math.round(x.due / maxVal1 * 100)) : 0;
+      var color = i < 2 ? red : amber;
+      return '<div class="debtor-bar-row">'
+        + '<div class="debtor-bar-id">' + escapeHtml(shortUnit(x.unit)) + '</div>'
+        + '<div class="debtor-bar-track"><div class="debtor-bar-fill" style="width:' + pct + '%;background:' + color + '"></div></div>'
+        + '<div class="debtor-bar-sum">' + x.due.toFixed(2) + ' €</div>'
+        + '</div>';
+    }).join('') + '</div>';
+  } else {
+    debtorsCard.innerHTML = '<div class="chart-note">Няма обекти със задължения. 🎉</div>';
+  }
+
+  var fullTrend = d.budgetTrend || [];
+  var runningCash = 0;
+  var fullCash = fullTrend.map(function(x){ runningCash += (x.income - x.expense); return Math.round(runningCash * 100) / 100; });
+  var trend = fullTrend.slice(-6);
+  var cashData = fullCash.slice(-6);
+  var labels = trend.map(function(x){ return monthLabel(x.month); });
+  var incomeData = trend.map(function(x){ return x.income; });
+  var expenseData = trend.map(function(x){ return -x.expense; });
+
+  new Chart(document.getElementById('incomeExpenseChart').getContext('2d'), {
+    type: 'bar',
+    data: { labels: labels, datasets: [
+      { label: 'Приходи', data: incomeData, backgroundColor: green, borderRadius: 3 },
+      { label: 'Разходи', data: expenseData, backgroundColor: red, borderRadius: 3 }
+    ] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: muted, font: { family: 'Nunito Sans', size: 11 } } },
+        datalabels: {
+          display: function(ctx){ return ctx.datasetIndex === 1 && Math.abs(ctx.dataset.data[ctx.dataIndex]) > 0.004; },
+          color: red, font: { size: 10, weight: '600' }, anchor: 'end', align: 'bottom', offset: 2,
+          formatter: function(v){ return '-' + Math.abs(v).toFixed(0) + ' €'; }
+        },
+        tooltip: { callbacks: { label: function(ctx){ return ctx.dataset.label + ': ' + Math.abs(ctx.parsed.y).toFixed(2) + ' €'; } } }
+      },
+      scales: {
+        x: { ticks: { color: muted, font: { size: 10 }, maxRotation: 0, minRotation: 0 }, grid: { display: false } },
+        y: { ticks: { color: muted, font: { size: 11 }, callback: function(v){ return v + ' €'; } }, grid: { color: gridColor } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('cashChart').getContext('2d'), {
+    type: 'line',
+    data: { labels: labels, datasets: [
+      { label: 'Каса (кумулативно)', data: cashData, borderColor: '#192166', backgroundColor: 'rgba(25,33,102,0.08)', fill: true, borderWidth: 2, pointRadius: 0, tension: .25 }
+    ] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }, datalabels: { display: false },
+        tooltip: { callbacks: { label: function(ctx){ return 'Каса: ' + ctx.parsed.y.toFixed(2) + ' €'; } } }
+      },
+      scales: {
+        x: { ticks: { color: muted, font: { size: 10 }, maxRotation: 0, minRotation: 0 }, grid: { display: false } },
+        y: { ticks: { color: '#192166', font: { size: 10 }, callback: function(v){ return v + ' €'; } }, grid: { color: gridColor } }
+      }
+    }
+  });
+}
+
+document.getElementById('code').addEventListener('keydown', function(e){ if (e.key === 'Enter') checkCode(); });
+
+// ---- PWA: service worker + install banner ----
+if ('serviceWorker' in navigator && !IS_DEMO_MODE) {
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+}
+var __deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); __deferredInstallPrompt = e; showInstallBanner(false); });
+function isStandalone(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
+function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+function lsGet_(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet_(k, v){ try { localStorage.setItem(k, v); } catch (e) {} }
+function showInstallBanner(iosMode){
+  if (isStandalone() || lsGet_('vhodB_installDismissed') === '1') return;
+  var banner = document.getElementById('installBanner');
+  var btn = document.getElementById('installBtn');
+  var text = document.getElementById('installText');
+  if (iosMode) { text.textContent = '📲 На iPhone: натисни Сподели, после "Добави към начален екран"'; btn.classList.add('hidden'); }
+  else { text.textContent = '📲 Инсталирай портала на началния екран за по-бърз достъп'; btn.classList.remove('hidden'); }
+  banner.classList.remove('hidden');
+}
+function doInstall(){
+  if (!__deferredInstallPrompt) return;
+  __deferredInstallPrompt.prompt();
+  __deferredInstallPrompt.userChoice.then(function(){ __deferredInstallPrompt = null; dismissInstall(); });
+}
+function dismissInstall(){ document.getElementById('installBanner').classList.add('hidden'); lsSet_('vhodB_installDismissed', '1'); }
+if (isIOS() && !isStandalone()) { showInstallBanner(true); }
+</script>
+</body>
+</html>
