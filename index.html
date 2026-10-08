@@ -227,10 +227,37 @@
   .proto-row{display:none}
   .proto-row.show{display:block}
 
-  .portal-nav{position:sticky;top:0;z-index:20;margin:0 -18px 18px;padding:12px 18px 10px;background:linear-gradient(rgba(238,242,248,0.88) 70%, rgba(238,242,248,0));backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);}
+  /* Менюто е прозрачно в покой; фонът с размазване се включва само докато е залепено най-горе (.stuck). */
+  .portal-nav{position:sticky;top:0;z-index:20;margin:0 -18px 18px;padding:12px 18px 10px;background:transparent;transition:background .2s ease, box-shadow .2s ease;}
+  .portal-nav.stuck{background:rgba(238,242,248,0.9);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 1px 0 rgba(25,33,102,0.06);}
   .portal-nav-inner{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .portal-nav-inner::-webkit-scrollbar{display:none}
   .nav-pill{flex:0 0 auto;min-height:36px;display:inline-flex;align-items:center;padding:0 13px;border-radius:999px;background:var(--surface);color:var(--navy);font-size:12.5px;font-weight:700;text-decoration:none;border:1px solid var(--border);white-space:nowrap}
+
+  .quorum-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:0 2px 10px rgba(25,33,102,0.05);text-align:center;margin-bottom:14px}
+  .quorum-pct{font-family:'Lora',serif;font-weight:800;font-size:38px;color:var(--navy);line-height:1}
+  .quorum-status{margin-top:8px;font-weight:800;font-size:13px;display:inline-block;padding:5px 14px;border-radius:20px}
+  .quorum-status.ok{background:var(--green-tint);color:#1f5c2a}
+  .quorum-status.warn{background:var(--amber-tint);color:#8a5205}
+  .quorum-status.bad{background:var(--red-tint);color:#8f0028}
+  .quorum-bar-track{position:relative;height:14px;background:var(--navy-tint);border-radius:8px;margin:18px 2px 10px;overflow:visible}
+  .quorum-bar-fill{height:100%;border-radius:8px;background:var(--red);transition:width .2s, background .2s}
+  .quorum-bar-marker{position:absolute;top:-4px;width:2px;height:22px;background:var(--navy);opacity:.35}
+  .quorum-bar-marker::after{content:attr(data-label);position:absolute;top:25px;left:50%;transform:translateX(-50%);font-size:9.5px;color:var(--muted);font-weight:700;white-space:nowrap}
+  .quorum-note{font-size:11.5px;color:var(--muted);margin-top:24px;line-height:1.5;text-align:left}
+  .quorum-count{font-size:12px;color:var(--muted);margin-top:10px;font-weight:700}
+  .quorum-missing{font-size:12px;color:#8a5205;background:var(--amber-tint);border:1px solid rgba(217,119,6,.3);border-radius:10px;padding:10px 12px;margin-bottom:12px;line-height:1.5}
+  .quorum-list{display:flex;flex-direction:column;max-height:440px;overflow-y:auto;border:1px solid var(--border);border-radius:11px;-webkit-overflow-scrolling:touch}
+  .quorum-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;cursor:pointer}
+  .quorum-row:last-child{border-bottom:none}
+  .quorum-row input[type=checkbox]{width:20px;height:20px;flex:0 0 auto;accent-color:var(--navy)}
+  .quorum-row .qr-unit{font-weight:800;color:var(--navy);min-width:56px;flex:0 0 auto}
+  .quorum-row .qr-owner{flex:1 1 auto;min-width:0;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px}
+  .quorum-row .qr-share{flex:0 0 auto;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12.5px}
+  .quorum-row.checked{background:var(--green-tint)}
+  .quorum-row.checked .qr-share{color:#1f5c2a}
+  .quorum-actions{display:flex;gap:8px;margin-top:12px}
+  .quorum-actions button{flex:1}
 
   @media print{
     body::before, body::after{display:none}
@@ -271,7 +298,11 @@
 
 <script>
 // ⚠️ Постави тук .../exec линка от Apps Script деплоя на Вход Б.
-var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL5t3vhD_pIGULQOkytXsGq7d5dzVHPsct4vjRURhKISGiMWmFsnpNgpHppILCDb3h3A/exec";
+var SCRIPT_URL = "PASTE_YOUR_DEPLOYED_WEB_APP_URL_HERE";
+
+// Таб "Архив" (протоколи от общи събрания) — скрит, докато не се нанесат протоколите.
+// За да се покаже: смени на true (както при Вход А).
+var SHOW_PROTOCOLS = false;
 
 function fmt(n){ return (Number(n)||0).toLocaleString('bg-BG',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €'; }
 if (window.ChartDataLabels) { Chart.register(ChartDataLabels); }
@@ -537,6 +568,8 @@ function todayStr_(){
 var __sessionTimer = null;
 function resetSessionTimer(){
   if (__sessionTimer) clearTimeout(__sessionTimer);
+  // Касиер/Домоуправител — без авто-изход (порталът стои отворен по време на събрание за кворума).
+  if (window.__lastData && window.__lastData.isAdmin) return;
   __sessionTimer = setTimeout(function(){
     if (!document.getElementById('result').classList.contains('hidden')) {
       alert('Сесията изтече поради неактивност. Ще влезеш отново с кода си.');
@@ -550,14 +583,77 @@ function resetSessionTimer(){
   }, { passive: true });
 });
 
+// ---- Кворум на ОС (само Касиер/Домоуправител) — смята се изцяло в браузъра ----
+// Отметка на един обект отмята автоматично и останалите обекти на СЪЩИЯ собственик (един човек
+// гласува с всичките си идеални части). Може да се коригира ръчно след това.
+function recomputeQuorum(checkbox){
+  if (checkbox) {
+    var owner = checkbox.getAttribute('data-owner');
+    if (owner) {
+      document.querySelectorAll('#quorumList input[type=checkbox]').forEach(function(b){
+        if (b !== checkbox && b.getAttribute('data-owner') === owner) {
+          b.checked = checkbox.checked;
+          var r2 = b.closest('.quorum-row'); if (r2) r2.classList.toggle('checked', b.checked);
+        }
+      });
+    }
+    var row = checkbox.closest('.quorum-row');
+    if (row) row.classList.toggle('checked', checkbox.checked);
+  }
+  var boxes = document.querySelectorAll('#quorumList input[type=checkbox]');
+  var sum = 0, checkedCount = 0;
+  boxes.forEach(function(b){ if (b.checked) { sum += Number(b.getAttribute('data-share')) || 0; checkedCount++; } });
+  sum = Math.round(sum * 100) / 100;
+  var pctEl = document.getElementById('quorumPct');
+  var statusEl = document.getElementById('quorumStatus');
+  var fillEl = document.getElementById('quorumBarFill');
+  if (!pctEl || !statusEl || !fillEl) return;
+  pctEl.textContent = sum.toFixed(2) + '%';
+  fillEl.style.width = Math.min(100, sum) + '%';
+  if (sum >= 67) {
+    statusEl.className = 'quorum-status ok'; statusEl.textContent = '✅ Кворум постигнат (≥67%)';
+    fillEl.style.background = 'var(--green)';
+  } else if (sum >= 33) {
+    statusEl.className = 'quorum-status warn'; statusEl.textContent = '⚠️ Само 33% — валидно само при процедурно отлагане';
+    fillEl.style.background = 'var(--amber)';
+  } else {
+    statusEl.className = 'quorum-status bad'; statusEl.textContent = '❌ Няма кворум';
+    fillEl.style.background = 'var(--red)';
+  }
+  var countEl = document.getElementById('quorumCount');
+  if (countEl) {
+    var totalShare = window.__lastData && window.__lastData.totalIdealShare;
+    countEl.textContent = checkedCount + ' от ' + boxes.length + ' обекта отметнати'
+      + (totalShare ? ' · общо идеални части във входа: ' + Number(totalShare).toFixed(2) + '%' : '');
+  }
+}
+function resetQuorum(){
+  document.querySelectorAll('#quorumList input[type=checkbox]').forEach(function(b){
+    b.checked = false; var r = b.closest('.quorum-row'); if (r) r.classList.remove('checked');
+  });
+  recomputeQuorum(null);
+}
+
+// ---- Меню: фон (.stuck) само когато е реално залепено най-горе ----
+function updateNavStuck_(){
+  var n = document.querySelector('.portal-nav');
+  if (!n) return;
+  n.classList.toggle('stuck', n.getBoundingClientRect().top <= 0.5 && window.scrollY > 0);
+}
+window.addEventListener('scroll', updateNavStuck_, { passive: true });
+window.addEventListener('resize', updateNavStuck_);
+
 function escapeHtml(v){ return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-var PORTAL_NAV_HTML = '<div class="portal-nav"><div class="portal-nav-inner">'
-  + '<a href="#imot" class="nav-pill">Моят имот</a>'
-  + '<a href="#finansi" class="nav-pill">Финанси</a>'
-  + '<a href="#arhiv" class="nav-pill">Архив</a>'
-  + '<a href="#pomosht" class="nav-pill">Помощ</a>'
-  + '</div></div>';
+function buildPortalNavHtml_(isAdmin){
+  return '<div class="portal-nav"><div class="portal-nav-inner">'
+    + '<a href="#imot" class="nav-pill">Моят имот</a>'
+    + '<a href="#finansi" class="nav-pill">Финанси</a>'
+    + (SHOW_PROTOCOLS ? '<a href="#arhiv" class="nav-pill">Архив</a>' : '')
+    + '<a href="#pomosht" class="nav-pill">Помощ</a>'
+    + (isAdmin ? '<a href="#kvorum" class="nav-pill">Кворум</a>' : '')
+    + '</div></div>';
+}
 
 function render(d){
   window.__lastData = d;
@@ -566,7 +662,8 @@ function render(d){
   var multi = d.units && d.units.length > 1;
 
   function subHtml(fro, tup){
-    return '<div class="b-sub"><div>ФРО: <b>' + fmt(fro || 0) + '</b></div><div>ТУП: <b>' + fmt(tup || 0) + '</b></div></div>';
+    // ФРО = Фонд ремонт и обновяване; ФУП = Фонд управление и поддръжка (етикет като при Вход А, 07.10.2026).
+    return '<div class="b-sub"><div>ФРО: <b>' + fmt(fro || 0) + '</b></div><div>ФУП: <b>' + fmt(tup || 0) + '</b></div></div>';
   }
   var budgetHtml = '<div class="budget-grid">'
     + '<div class="budget-card"><div class="b-label">Приходи</div><div class="b-val inc">' + fmt(totals.income) + '</div>' + subHtml(d.froCollected, d.maintenanceCollected) + '</div>'
@@ -729,7 +826,41 @@ function render(d){
       + '<h2>' + escapeHtml(d.role) + ' — Вход Б</h2></div>';
   }
 
-  document.getElementById('result').innerHTML = PORTAL_NAV_HTML
+  // ---- Кворум на ОС — само Касиер/Домоуправител ----
+  var quorumHtml = '';
+  if (d.isAdmin && d.quorumRoster && d.quorumRoster.length) {
+    var totalShareNum = Number(d.totalIdealShare) || 0;
+    var quorumRowsHtml = d.quorumRoster.map(function(u){
+      var shareVal = Number(u.idealShare) || 0;
+      return '<label class="quorum-row">'
+        + '<input type="checkbox" data-share="' + shareVal + '" data-owner="' + escapeHtml(u.owner || '') + '" onchange="recomputeQuorum(this)">'
+        + '<span class="qr-unit">' + escapeHtml(shortUnit(u.unit)) + '</span>'
+        + '<span class="qr-owner">' + escapeHtml(u.owner || '') + '</span>'
+        + '<span class="qr-share">' + shareVal.toFixed(2) + '%</span>'
+        + '</label>';
+    }).join('');
+    var missingHtml = totalShareNum < 0.01
+      ? '<div class="quorum-missing">Дяловете идеални части още не са въведени (колона L „% ид.ч.“ в ДОСТЪП). Отметките работят, но сумата ще е 0% до попълването им.</div>'
+      : '';
+    quorumHtml = '<div id="kvorum">'
+      + '<div class="section"><div class="section-label">Само за ' + escapeHtml(d.role) + '</div><div class="section-title">Кворум на събранието</div>'
+      + missingHtml
+      + '<div class="quorum-summary">'
+        + '<div class="quorum-pct" id="quorumPct">0.00%</div>'
+        + '<div class="quorum-status bad" id="quorumStatus">❌ Няма кворум</div>'
+        + '<div class="quorum-bar-track"><div class="quorum-bar-fill" id="quorumBarFill" style="width:0%"></div>'
+          + '<div class="quorum-bar-marker" style="left:33%" data-label="33%"></div>'
+          + '<div class="quorum-bar-marker" style="left:67%" data-label="67%"></div></div>'
+        + '<div class="quorum-note"><strong style="color:var(--text)">67%</strong> — редовен кворум по чл. 15, ал. 1 ЗУЕС. <strong style="color:var(--text)">33%</strong> важи само ако събранието вече е процедурно отложено с 1 час по чл. 15, ал. 2. Отметка на един обект отмята автоматично и другите обекти на същия собственик.</div>'
+        + '<div class="quorum-count" id="quorumCount">0 от ' + d.quorumRoster.length + ' обекта отметнати' + (totalShareNum ? ' · общо идеални части във входа: ' + totalShareNum.toFixed(2) + '%' : '') + '</div>'
+        + '</div>'
+      + '<div class="chart-card"><div class="quorum-list" id="quorumList">' + quorumRowsHtml + '</div>'
+        + '<div class="quorum-actions"><button class="export-btn" onclick="resetQuorum()">↺ Нулирай всички</button></div>'
+        + '</div>'
+      + '</div></div>';
+  }
+
+  document.getElementById('result').innerHTML = buildPortalNavHtml_(d.isAdmin)
     + '<div id="imot">'
     + unitCardHtml
     + statStripHtml
@@ -756,14 +887,17 @@ function render(d){
     + '<div class="section"><div class="section-label">Отчетност</div><div class="section-title">Годишен отчет</div>' + yearlyHtml + '</div>'
     + '<div class="section"><div class="section-label">Дневник</div><div class="section-title">Разходи по отчети</div><div class="report-list">' + journalHtml + '</div></div>'
     + '</div>'
-    + '<div id="arhiv">'
-    + '<div class="section"><div class="section-label">Архив</div><div class="section-title">Протоколи от общи събрания</div>' + protocolsHtml + '</div>'
-    + '</div>'
+    + (SHOW_PROTOCOLS ? (
+        '<div id="arhiv">'
+        + '<div class="section"><div class="section-label">Архив</div><div class="section-title">Протоколи от общи събрания</div>' + protocolsHtml + '</div>'
+        + '</div>'
+      ) : '')
     + '<div id="pomosht">'
     + '<div class="section"><div class="section-label">Помощ</div><div class="section-title">Важни телефони</div><div class="contact-card">' + contactsHtml + '</div></div>'
     + '<div class="section"><div class="section-label">Поддръжка</div><div class="section-title">Сигнали за повреди</div>'
       + '<div class="signal-card">' + signalsListWrapHtml + signalFormHtml + '</div></div>'
     + '</div>'
+    + quorumHtml
     + (d.isAdmin ? '<button class="export-btn" onclick="exportCsv()">📥 Изтегли всички данни (CSV)</button>' : '')
     + '<div class="logout"><button onclick="location.reload()">Изход</button></div>';
 
