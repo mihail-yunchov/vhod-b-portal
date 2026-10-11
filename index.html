@@ -304,6 +304,11 @@ var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwL5t3vhD_pIGULQOkytXs
 // За да се покаже: смени на true (както при Вход А).
 var SHOW_PROTOCOLS = false;
 
+// Секция "Моят имот" (лично дължимо, тримесечие, IBAN/основание) — ВРЕМЕННО скрита за собствениците
+// до решение на ОС за ползване на платформата (по молба на домоуправителя, 11.10.2026).
+// Касиер/Домоуправител продължават да я виждат. За да се покаже отново на всички: смени на true.
+var SHOW_MY_UNIT = false;
+
 function fmt(n){ return (Number(n)||0).toLocaleString('bg-BG',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €'; }
 if (window.ChartDataLabels) { Chart.register(ChartDataLabels); }
 // "Окт – Дек 2026" / "Дек 2026 – Фев 2027" от два ключа "YYYY-MM" (за тримесечията)
@@ -726,7 +731,7 @@ function escapeHtml(v){ return String(v==null?'':v).replace(/&/g,'&amp;').replac
 
 function buildPortalNavHtml_(isAdmin){
   return '<div class="portal-nav"><div class="portal-nav-inner">'
-    + '<a href="#imot" class="nav-pill">Моят имот</a>'
+    + ((SHOW_MY_UNIT || isAdmin) ? '<a href="#imot" class="nav-pill">Моят имот</a>' : '')
     + '<a href="#finansi" class="nav-pill">Финанси</a>'
     + (SHOW_PROTOCOLS ? '<a href="#arhiv" class="nav-pill">Архив</a>' : '')
     + '<a href="#pomosht" class="nav-pill">Помощ</a>'
@@ -957,8 +962,7 @@ function render(d){
 
   document.getElementById('result').innerHTML = buildPortalNavHtml_(d.isAdmin)
     + '<div id="imot">'
-    + unitCardHtml
-    + statStripHtml
+    + ((SHOW_MY_UNIT || d.isAdmin) ? unitCardHtml + statStripHtml : '')
     + runwayHtml
     + (d.isAdmin ? '<button class="admin-toggle" id="adminToggleBtn" onclick="toggleAdmin()">📊 Разширен изглед — задължения по тримесечия (' + escapeHtml(d.role) + ')</button>' : '')
     + '<div id="adminView" class="hidden"><div id="printSection">'
