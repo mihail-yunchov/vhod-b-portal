@@ -309,6 +309,10 @@ var SHOW_PROTOCOLS = false;
 // Касиер/Домоуправител продължават да я виждат. За да се покаже отново на всички: смени на true.
 var SHOW_MY_UNIT = false;
 
+// Секция "Поддръжка — Сигнали за повреди" — ВРЕМЕННО скрита за собствениците (12.10.2026).
+// Касиер/Домоуправител продължават да я виждат (за да обработват стари сигнали). За връщане: true.
+var SHOW_SIGNALS = false;
+
 function fmt(n){ return (Number(n)||0).toLocaleString('bg-BG',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €'; }
 if (window.ChartDataLabels) { Chart.register(ChartDataLabels); }
 // "Окт – Дек 2026" / "Дек 2026 – Фев 2027" от два ключа "YYYY-MM" (за тримесечията)
@@ -994,8 +998,8 @@ function render(d){
       ) : '')
     + '<div id="pomosht">'
     + '<div class="section"><div class="section-label">Помощ</div><div class="section-title">Важни телефони</div><div class="contact-card">' + contactsHtml + '</div></div>'
-    + '<div class="section"><div class="section-label">Поддръжка</div><div class="section-title">Сигнали за повреди</div>'
-      + '<div class="signal-card">' + signalsListWrapHtml + signalFormHtml + '</div></div>'
+    + ((SHOW_SIGNALS || d.isAdmin) ? ('<div class="section"><div class="section-label">Поддръжка</div><div class="section-title">Сигнали за повреди</div>'
+      + '<div class="signal-card">' + signalsListWrapHtml + signalFormHtml + '</div></div>') : '')
     + '</div>'
     + quorumHtml
     + (d.isAdmin ? '<button class="export-btn" onclick="exportCsv()">📥 Изтегли всички данни (CSV)</button>' : '')
