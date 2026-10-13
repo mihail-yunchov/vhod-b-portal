@@ -104,6 +104,7 @@
   .budget-due-row{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:8px;margin-top:8px}
   .budget-due-row .budget-rate{grid-column:1}
   .budget-due-row .budget-due{grid-column:2}
+  .budget-due-row .budget-fc{grid-column:3}
   .b-val.due{color:var(--amber)}
   .budget-card .b-note{margin-top:5px;font-size:9px;color:var(--muted);line-height:1.35}
 
@@ -799,7 +800,21 @@ function render(d){
       + '<div class="b-note">' + escapeHtml(toNote) + '</div>'
       + '</div>';
   }
-  if (rateCardHtml || dueCardHtml) budgetHtml += '<div class="budget-due-row">' + rateCardHtml + dueCardHtml + '</div>';
+  // Прогноза за следващата година (под "Каса") — само резултатът (приходи − разходи), ФРО/ФУП отдолу;
+  // подробностите — при задържане (title). Логиката е в buildForecast_ в Code_vhod_b.gs.
+  var fcCardHtml = '';
+  var fc = d.forecast;
+  if (fc && fc.result) {
+    var sgn = function(v){ return (v > 0.005 ? '+' : '') + fmt(v); };
+    var fcTitle = 'Очаквани приходи: ' + fmt(fc.income.total) + ' (при ' + String(fc.collectionPct).replace('.', ',') + ' % събираемост)'
+      + '\nОчаквани разходи: ' + fmt(fc.expense.total) + ' (по последните 12 месеца + планирани ремонти)';
+    fcCardHtml = '<div class="budget-card budget-fc" title="' + escapeHtml(fcTitle) + '">'
+      + '<div class="b-label">Прогноза ' + escapeHtml(fc.year) + '</div>'
+      + '<div class="b-val ' + (fc.result.total >= 0 ? 'inc' : 'exp') + '">' + sgn(fc.result.total) + '</div>'
+      + '<div class="b-sub"><div>ФРО: <b>' + sgn(fc.result.fro) + '</b></div><div>ФУП: <b>' + sgn(fc.result.fup) + '</b></div></div>'
+      + '</div>';
+  }
+  if (rateCardHtml || dueCardHtml || fcCardHtml) budgetHtml += '<div class="budget-due-row">' + rateCardHtml + dueCardHtml + fcCardHtml + '</div>';
 
   var yearly = yearlyFromTrend(d.budgetTrend);
   var yearlyRowsHtml = yearly.map(function(y){
