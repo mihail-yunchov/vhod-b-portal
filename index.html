@@ -101,6 +101,10 @@
   .b-val.inc{color:var(--green)} .b-val.exp{color:var(--red)} .b-val.bal{color:var(--navy)}
   .budget-card .b-sub{margin-top:6px;font-size:9.5px;color:var(--muted);line-height:1.55;font-weight:600}
   .budget-card .b-sub b{color:var(--navy);font-weight:800}
+  .budget-due-row{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:8px;margin-top:8px}
+  .budget-due-row .budget-due{grid-column:2}
+  .b-val.due{color:var(--amber)}
+  .budget-card .b-note{margin-top:5px;font-size:9px;color:var(--muted);line-height:1.35}
 
   .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:0 2px 10px rgba(25,33,102,0.05)}
   .chart-box{position:relative;width:100%;height:220px}
@@ -309,9 +313,13 @@ var SHOW_PROTOCOLS = false;
 // Касиер/Домоуправител продължават да я виждат. За да се покаже отново на всички: смени на true.
 var SHOW_MY_UNIT = false;
 
-// Секция "Поддръжка — Сигнали за повреди" — ВРЕМЕННО скрита за собствениците (12.10.2026).
-// Касиер/Домоуправител продължават да я виждат (за да обработват стари сигнали). За връщане: true.
+// Секция "Поддръжка — Сигнали за повреди" — ВРЕМЕННО скрита за ВСИЧКИ, вкл. Касиер/Домоуправител
+// (12.10 за собствениците, 13.10.2026 и за админите). За връщане: true.
 var SHOW_SIGNALS = false;
+
+// Секция "Дневник — Разходи по отчети" — ВРЕМЕННО скрита за собствениците (13.10.2026).
+// Касиер/Домоуправител продължават да я виждат. За връщане за всички: true.
+var SHOW_JOURNAL = false;
 
 function fmt(n){ return (Number(n)||0).toLocaleString('bg-BG',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €'; }
 if (window.ChartDataLabels) { Chart.register(ChartDataLabels); }
@@ -758,6 +766,17 @@ function render(d){
     + '<div class="budget-card"><div class="b-label">Разходи</div><div class="b-val exp">' + fmt(totals.expense) + '</div>' + subHtml(d.froExpense, d.maintenanceExpense) + '</div>'
     + '<div class="budget-card"><div class="b-label">Каса</div><div class="b-val bal">' + fmt(totals.balance) + '</div>' + subHtml(d.froBalance, d.maintenanceBalance) + '</div>'
     + '</div>';
+  // Общо дължимо от собствениците (всички обекти, без имена) — центрирано под "Разходи".
+  // До края на текущото тримесечие, а за платилите го — следващото (виж totalOutstanding в Code_vhod_b.gs).
+  var to = d.totalOutstanding;
+  if (to) {
+    var toNote = 'до ' + monthLabel(to.curEndKey) + '; за платилите — до ' + monthLabel(to.nextEndKey);
+    budgetHtml += '<div class="budget-due-row"><div class="budget-card budget-due">'
+      + '<div class="b-label">Дължимо</div><div class="b-val due">' + fmt(to.amount) + '</div>'
+      + subHtml(to.fro, to.fup)
+      + '<div class="b-note">' + escapeHtml(toNote) + '</div>'
+      + '</div></div>';
+  }
 
   var yearly = yearlyFromTrend(d.budgetTrend);
   var yearlyRowsHtml = yearly.map(function(y){
@@ -989,7 +1008,7 @@ function render(d){
       + '<div class="chart-card"><div class="chart-box" style="height:150px"><canvas id="cashChart"></canvas></div></div>'
     + '</div>'
     + '<div class="section"><div class="section-label">Отчетност</div><div class="section-title">Годишен отчет</div>' + yearlyHtml + '</div>'
-    + '<div class="section"><div class="section-label">Дневник</div><div class="section-title">Разходи по отчети</div><div class="report-list">' + journalHtml + '</div></div>'
+    + ((SHOW_JOURNAL || d.isAdmin) ? '<div class="section"><div class="section-label">Дневник</div><div class="section-title">Разходи по отчети</div><div class="report-list">' + journalHtml + '</div></div>' : '')
     + '</div>'
     + (SHOW_PROTOCOLS ? (
         '<div id="arhiv">'
@@ -998,7 +1017,7 @@ function render(d){
       ) : '')
     + '<div id="pomosht">'
     + '<div class="section"><div class="section-label">Помощ</div><div class="section-title">Важни телефони</div><div class="contact-card">' + contactsHtml + '</div></div>'
-    + ((SHOW_SIGNALS || d.isAdmin) ? ('<div class="section"><div class="section-label">Поддръжка</div><div class="section-title">Сигнали за повреди</div>'
+    + (SHOW_SIGNALS ? ('<div class="section"><div class="section-label">Поддръжка</div><div class="section-title">Сигнали за повреди</div>'
       + '<div class="signal-card">' + signalsListWrapHtml + signalFormHtml + '</div></div>') : '')
     + '</div>'
     + quorumHtml
