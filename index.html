@@ -784,8 +784,7 @@ function render(d){
     var pctTxt = function(p){ return (p == null ? '—' : String(p).replace('.', ',') + ' %'); };
     var rateCls = cr.pct >= 90 ? 'inc' : (cr.pct >= 75 ? 'due' : 'exp');
     var ys = cr.years || [], cy = ys.length ? ys[ys.length - 1] : null;
-    var allYears = ys.map(function(y){ return y.year + ': ' + pctTxt(y.pct) + ' (' + fmt(y.collected) + ' от ' + fmt(y.charged) + ')'; }).join('\n')
-      + (cr.advanceNextYears > 0.005 ? '\nАванси за следващи години: ' + fmt(cr.advanceNextYears) : '');
+    var allYears = ys.map(function(y){ return y.year + ': ' + pctTxt(y.pct) + ' (' + fmt(y.collected) + ' от ' + fmt(y.charged) + ')'; }).join('\n');
     rateCardHtml = '<div class="budget-card budget-rate" title="' + escapeHtml(allYears) + '">'
       + '<div class="b-label">Събираемост</div><div class="b-val ' + rateCls + '">' + pctTxt(cr.pct) + '</div>'
       + '<div class="b-sub"><div>Събрано: <b>' + fmt(cr.collected) + '</b></div><div>Начислено: <b>' + fmt(cr.charged) + '</b></div></div>'
