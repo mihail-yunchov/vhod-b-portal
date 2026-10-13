@@ -767,10 +767,10 @@ function render(d){
     + '<div class="budget-card"><div class="b-label">Каса</div><div class="b-val bal">' + fmt(totals.balance) + '</div>' + subHtml(d.froBalance, d.maintenanceBalance) + '</div>'
     + '</div>';
   // Общо дължимо от собствениците (всички обекти, без имена) — центрирано под "Разходи".
-  // До края на текущото тримесечие, а за платилите го — следващото (виж totalOutstanding в Code_vhod_b.gs).
+  // Само до края на ТЕКУЩОТО тримесечие (без "следв."), виж totalOutstanding в Code_vhod_b.gs.
   var to = d.totalOutstanding;
   if (to) {
-    var toNote = 'до ' + monthLabel(to.curEndKey) + '; за платилите — до ' + monthLabel(to.nextEndKey);
+    var toNote = 'до края на тримесечието (' + monthLabel(to.curEndKey) + ')';
     budgetHtml += '<div class="budget-due-row"><div class="budget-card budget-due">'
       + '<div class="b-label">Дължимо</div><div class="b-val due">' + fmt(to.amount) + '</div>'
       + subHtml(to.fro, to.fup)
