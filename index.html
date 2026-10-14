@@ -490,9 +490,12 @@ function drawAdminChart(d){
     { label: 'Тримесечие ' + curTxt, color: '#d97706', get: function(x){ return x.due + x.rest; } },
     { label: 'Следващо ' + nextTxt, color: '#1fb5c3', get: function(x){ return x.next; } }
   ];
+  // Етикет: дължимо + колко е платил досега (на тесен екран — съкратено).
+  var narrowAdm = box.clientWidth < 480;
   function labelText(row){
-    if (row.next > 0.005) return 'следв. ' + row.next.toFixed(2) + ' €';
-    return (row.due + row.rest).toFixed(2) + ' €';
+    var main = row.next > 0.005 ? 'следв. ' + row.next.toFixed(2) + ' €' : (row.due + row.rest).toFixed(2) + ' €';
+    if (row.paid == null) return main;
+    return main + (narrowAdm ? ' · пл. ' + Math.round(row.paid) : '  ·  платено ' + row.paid.toFixed(2) + ' €');
   }
   window.__adminChart = new Chart(ctx, {
     type: 'bar',
@@ -516,12 +519,15 @@ function drawAdminChart(d){
     },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      layout: { padding: { right: 95 } },
+      layout: { padding: { right: narrowAdm ? 130 : 210 } },
       plugins: {
         legend: { display: true, position: 'bottom', labels: { boxWidth: 12, boxHeight: 12, color: '#192166', font: { size: 11, weight: '700' } } },
         tooltip: { callbacks: {
           label: function(c){ return c.dataset.label + ': ' + c.parsed.x.toFixed(2) + ' €'; },
-          afterLabel: function(c){ var r = list[c.dataIndex]; return (c.datasetIndex === 0 && r.due > 0.005 && r.rest > 0.005) ? 'от тях дължимо вече сега: ' + r.due.toFixed(2) + ' €' : ''; }
+          afterLabel: function(c){ var r = list[c.dataIndex], out = [];
+            if (c.datasetIndex === 0 && r.due > 0.005 && r.rest > 0.005) out.push('от тях дължимо вече сега: ' + r.due.toFixed(2) + ' €');
+            if (r.paid != null) out.push('платено досега: ' + r.paid.toFixed(2) + ' €');
+            return out; }
         } }
       },
       scales: {
@@ -551,20 +557,23 @@ function downloadDebtorsExcel(){
   var today = new Date();
   var stamp = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
   // Редовете със "следв." (нищо за текущото тримесечие) остават със сума 0 → показва се "-".
-  var rows = list.map(function(x){ return [x.unit, Math.round((x.due + x.rest) * 100) / 100]; });
+  var rows = list.map(function(x){ return [x.unit, Math.round((x.due + x.rest) * 100) / 100, x.paid != null ? x.paid : 0]; });
   var btn = document.getElementById('dlExcelBtn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Подготвям…'; }
   function done(){ if (btn) { btn.disabled = false; btn.textContent = '⬇️ Свали Excel'; } }
   loadXlsx_().then(function(XLSX){
-    var aoa = [['Обект', 'Дължима сума (€)']].concat(rows);
+    var aoa = [['Обект', 'Дължима сума (€)', 'Платено досега (€)']].concat(rows);
     var ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws['!cols'] = [{ wch: 26 }, { wch: 20 }];
-    for (var r = 2; r <= aoa.length; r++) { if (ws['B' + r]) ws['B' + r].z = '#,##0.00;(#,##0.00);-'; }
+    ws['!cols'] = [{ wch: 26 }, { wch: 20 }, { wch: 20 }];
+    for (var r = 2; r <= aoa.length; r++) {
+      if (ws['B' + r]) ws['B' + r].z = '#,##0.00;(#,##0.00);-';
+      if (ws['C' + r]) ws['C' + r].z = '#,##0.00;(#,##0.00);-';
+    }
     var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Дължимо');
     XLSX.writeFile(wb, 'Dalzhimo_Vhod_B_' + stamp + '.xlsx');
   }).catch(function(){
-    var csv = '﻿Обект;Дължима сума (€)\r\n' + rows.map(function(r){ return r[0] + ';' + r[1].toFixed(2).replace('.', ','); }).join('\r\n');
+    var csv = '﻿Обект;Дължима сума (€);Платено досега (€)\r\n' + rows.map(function(r){ return r[0] + ';' + r[1].toFixed(2).replace('.', ',') + ';' + r[2].toFixed(2).replace('.', ','); }).join('\r\n');
     var a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     a.download = 'Dalzhimo_Vhod_B_' + stamp + '.csv';
