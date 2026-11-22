@@ -59,14 +59,17 @@
   .unit-card .eyebrow-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
   .unit-card .eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;color:var(--teal-deep)}
   .unit-card h2{font-family:'Lora',serif;font-size:26px;font-weight:700;color:var(--navy);margin-top:6px;line-height:1.25}
-  .unit-card .due{margin-top:14px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-top:1px solid var(--border);padding-top:14px}
-  .unit-card .due-left{min-width:0}
-  .unit-card .due-label{font-size:13px;color:var(--muted)}
-  .unit-card .due-meta{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .unit-card .due{margin-top:14px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 12px;border-top:1px solid var(--border);padding-top:14px}
+  .unit-card .due-left{flex:1 1 150px;min-width:0}
+  .unit-card .due-label{font-size:13px;color:var(--text);font-weight:700;line-height:1.35}
+  .unit-card .due-meta{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.4}
   .unit-card .due-amt{font-family:'Lora',serif;font-size:30px;font-weight:700;white-space:nowrap;line-height:1;flex:0 0 auto}
-  .due-amt.zero{color:var(--green)} .due-amt.owe{color:var(--red)}
+  .due-amt.zero{color:var(--green);font-size:22px} .due-amt.owe{color:var(--red)} .due-amt.soon{color:var(--amber)} .due-amt.next{color:var(--navy)}
   .updated-badge{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:#47517f;background:#f1f4fa;border:1px solid var(--border);border-radius:20px;padding:5px 10px 5px 8px;white-space:nowrap}
   .updated-badge .dot{width:6px;height:6px;border-radius:99px;background:var(--green);flex:0 0 auto}
+  .eyebrow-row .badges{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px}
+  .paid-badge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;border-radius:20px;padding:5px 10px;white-space:nowrap;color:#1c6b3a;background:#e8f6ee;border:1px solid rgba(34,160,90,.35)}
+  .paid-badge.behind{color:#8a5205;background:var(--amber-tint);border-color:rgba(217,119,6,.35)}
 
   .units-split{margin-top:12px;border:1px solid var(--border);border-radius:11px;overflow:hidden}
   .units-split-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;font-size:13px;border-top:1px solid var(--border)}
@@ -74,14 +77,14 @@
   .units-split-name{font-weight:700;color:var(--text);min-width:0}
   .units-split-meta{display:block;font-size:11px;color:var(--muted);font-weight:500}
   .units-split-amt{font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
-  .units-split-amt.zero{color:var(--green)} .units-split-amt.owe{color:var(--red)}
+  .units-split-amt.zero{color:var(--green)} .units-split-amt.owe{color:var(--red)} .units-split-amt.soon{color:var(--amber)} .units-split-amt.next{color:var(--navy)}
 
   .pay-box{margin:14px -22px -20px;padding:16px 22px 18px;border-top:1px solid var(--border);background:#f5f8fd;display:flex;flex-direction:column;gap:8px}
   .pay-box .pay-heading{font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--navy);font-weight:800;margin-bottom:2px}
   .pay-field{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:10px 12px}
   .pay-field-main{flex:1 1 auto;min-width:0}
   .pay-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
-  .pay-val{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px;font-weight:600;color:var(--navy);letter-spacing:.02em;word-break:break-all;margin-top:2px}
+  .pay-val{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px;font-weight:600;color:var(--navy);letter-spacing:.02em;word-break:normal;overflow-wrap:anywhere;margin-top:2px}
   .pay-val.pay-val-ref{font-family:'Nunito Sans',sans-serif;font-weight:700;letter-spacing:normal;word-break:normal;overflow-wrap:break-word;line-height:1.4}
   .pay-copy{flex:0 0 auto;min-height:38px;background:var(--navy);color:#fff;border:none;border-radius:8px;padding:0 14px;font-weight:800;font-size:12px;cursor:pointer;font-family:'Nunito Sans',sans-serif;white-space:nowrap}
   .pay-copy.alt{background:var(--surface);color:var(--navy);border:1px solid var(--border)}
@@ -101,6 +104,7 @@
   .b-val.inc{color:var(--green)} .b-val.exp{color:var(--red)} .b-val.bal{color:var(--navy)}
   .budget-card .b-sub{margin-top:6px;font-size:9.5px;color:var(--muted);line-height:1.55;font-weight:600}
   .budget-card .b-sub b{color:var(--navy);font-weight:800}
+  .budget-card .b-sub b.pos{color:var(--green)} .budget-card .b-sub b.neg{color:var(--red)}
   .budget-due-row{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:8px;margin-top:8px}
   .budget-due-row .budget-rate{grid-column:1}
   .budget-due-row .budget-due{grid-column:2}
@@ -119,7 +123,7 @@
   .debtor-bar-id{min-width:38px;max-width:76px;flex:0 0 auto;font-size:12px;font-weight:800;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .debtor-bar-track{flex:1 1 auto;height:20px;background:var(--navy-tint);border-radius:5px;overflow:hidden;min-width:0}
   .debtor-bar-fill{height:100%;border-radius:5px}
-  .debtor-bar-sum{width:70px;flex:0 0 auto;text-align:right;font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
+  .debtor-bar-sum{width:84px;flex:0 0 auto;white-space:nowrap;text-align:right;font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
 
   .journal-row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
   .journal-row:last-child{border-bottom:none}
@@ -199,7 +203,7 @@
   .contact-row:last-child{border-bottom:none}
   .contact-role{font-weight:700;color:var(--text)}
   .contact-note{font-size:11px;color:var(--muted);display:block;margin-top:1px}
-  .contact-call{background:var(--green-tint);color:#1f5c2a;border:1px solid rgba(61,158,74,.3);border-radius:20px;padding:7px 14px;font-size:12px;font-weight:800;text-decoration:none;min-height:36px;display:inline-flex;align-items:center;font-variant-numeric:tabular-nums}
+  .contact-call{background:var(--green-tint);color:#1f5c2a;border:1px solid rgba(61,158,74,.3);border-radius:20px;padding:7px 14px;font-size:12px;font-weight:800;text-decoration:none;min-height:36px;display:inline-flex;align-items:center;font-variant-numeric:tabular-nums;white-space:nowrap;flex:0 0 auto}
 
   .signal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;box-shadow:0 2px 10px rgba(25,33,102,0.05);display:flex;flex-direction:column;gap:10px}
   .signal-row{display:flex;align-items:flex-start;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--border)}
@@ -390,7 +394,7 @@ function copyText_(text, msgId){
     navigator.clipboard.writeText(text).then(shown).catch(function(){ fallbackCopy_(text, shown); });
   } else { fallbackCopy_(text, shown); }
 }
-function copyIban(){ var el = document.getElementById('payIban'); copyText_(el ? el.textContent.trim() : '', 'payCopied'); }
+function copyIban(){ var el = document.getElementById('payIban'); copyText_(el ? el.textContent.replace(/\s+/g, '') : '', 'payCopied'); } // показва се на групи по 4, копира се слято
 function copyRef(){ var el = document.getElementById('payRef'); copyText_(el ? el.textContent.trim() : '', 'payRefCopied'); }
 function fallbackCopy_(text, cb){
   var ta = document.createElement('textarea');
@@ -428,6 +432,39 @@ function buildPayRef_(unit, fromKey, toKey){
   var sameYear = fromKey.split('-')[0] === toKey.split('-')[0];
   var fromLabel = sameYear ? monthNameOnly_(fromKey) : monthNameLong_(fromKey);
   return unit + ' — такси за периода ' + fromLabel + ' - ' + monthNameLong_(toKey);
+}
+// Етикет за няколко обекта, като unitsLabel_ в бекенда: "Апартамент Б12" / "Апартаменти Б12, Б13" / "Апартамент Б101 + Магазин Б4"
+function unitsLabelFront_(list){
+  if (list.length === 1) return list[0];
+  var allApt = list.every(function(u){ return /^Апартамент\s/.test(u); });
+  var allShop = list.every(function(u){ return /^Магазин\s/.test(u); });
+  if (allApt) return 'Апартаменти ' + list.map(function(u){ return u.replace(/^Апартамент\s*/, ''); }).join(', ');
+  if (allShop) return 'Магазини ' + list.map(function(u){ return u.replace(/^Магазин\s*/, ''); }).join(', ');
+  return list.join(' + ');
+}
+// Кратък вид на месец за "платено до": "2026-09" -> "9.26"
+function monthShort_(key){
+  if (!key) return '';
+  var p = String(key).split('-'); if (p.length < 2) return '';
+  return Number(p[1]) + '.' + p[0].slice(2);
+}
+// "2026-09" -> "2026-10"
+function nextMonthKey_(key){
+  var p = String(key).split('-'), dt = new Date(Number(p[0]), Number(p[1]), 1);
+  return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0');
+}
+// "октомври – декември 2026" / "декември 2026 – март 2027" / "декември 2026"
+function periodText_(fromKey, toKey){
+  if (!fromKey || !toKey) return '';
+  if (fromKey === toKey) return monthNameLong_(fromKey);
+  var sameYear = fromKey.split('-')[0] === toKey.split('-')[0];
+  return (sameYear ? monthNameOnly_(fromKey) : monthNameLong_(fromKey)) + ' – ' + monthNameLong_(toKey);
+}
+// Блокът "сума за плащане" в картата на обекта (виж pay.mode в render).
+function dueBlock_(label, meta, amountText, cls){
+  return '<div class="due"><div class="due-left"><div class="due-label">' + escapeHtml(label) + '</div>'
+    + (meta ? '<div class="due-meta">' + escapeHtml(meta) + '</div>' : '') + '</div>'
+    + '<div class="due-amt ' + cls + '">' + escapeHtml(amountText) + '</div></div>';
 }
 function groupJournalByMonth_(entries){
   var byMonth = {};
@@ -506,12 +543,16 @@ function drawAdminChart(d){
     { label: 'Тримесечие ' + curTxt, color: '#d97706', get: function(x){ return x.due + x.rest; } },
     { label: 'Следващо ' + nextTxt, color: '#1fb5c3', get: function(x){ return x.next; } }
   ];
-  // Етикет: дължимо + колко е платил досега (на тесен екран — съкратено).
+  // Етикет: дължимо + до кога е платено (+ колко е платено досега на широк екран).
+  // На тесен екран: само сума и "до 9.26" (следващото тримесечие личи по цвета/легендата).
   var narrowAdm = box.clientWidth < 480;
   function labelText(row){
-    var main = row.next > 0.005 ? 'следв. ' + row.next.toFixed(2) + ' €' : (row.due + row.rest).toFixed(2) + ' €';
-    if (row.paid == null) return main;
-    return main + (narrowAdm ? ' · пл. ' + Math.round(row.paid) : '  ·  платено ' + row.paid.toFixed(2) + ' €');
+    var amt = row.next > 0.005 ? row.next : (row.due + row.rest);
+    var until = row.paidThrough ? 'до ' + monthShort_(row.paidThrough) : '';
+    if (narrowAdm) return fmt(amt) + (until ? ' · ' + until : '');
+    var main = (row.next > 0.005 ? 'следв. ' : '') + fmt(amt);
+    if (row.paid == null) return main + (until ? '  ·  ' + until : '');
+    return main + '  ·  ' + (until ? until + ' · ' : '') + 'платено ' + fmt(row.paid);
   }
   window.__adminChart = new Chart(ctx, {
     type: 'bar',
@@ -527,7 +568,7 @@ function drawAdminChart(d){
               return true;
             },
             anchor: 'end', align: 'right', clamp: true, color: '#192166',
-            font: { weight: '800', size: 12, family: 'Nunito Sans' },
+            font: { weight: '800', size: narrowAdm ? 11 : 12, family: 'Nunito Sans' },
             formatter: function(v, c){ return labelText(list[c.dataIndex]); }
           }
         };
@@ -535,19 +576,20 @@ function drawAdminChart(d){
     },
     options: {
       indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      layout: { padding: { right: narrowAdm ? 130 : 210 } },
+      layout: { padding: { right: narrowAdm ? 120 : 260 } },
       plugins: {
         legend: { display: true, position: 'bottom', labels: { boxWidth: 12, boxHeight: 12, color: '#192166', font: { size: 11, weight: '700' } } },
         tooltip: { callbacks: {
-          label: function(c){ return c.dataset.label + ': ' + c.parsed.x.toFixed(2) + ' €'; },
+          label: function(c){ return c.dataset.label + ': ' + fmt(c.parsed.x); },
           afterLabel: function(c){ var r = list[c.dataIndex], out = [];
-            if (c.datasetIndex === 0 && r.due > 0.005 && r.rest > 0.005) out.push('от тях дължимо вече сега: ' + r.due.toFixed(2) + ' €');
-            if (r.paid != null) out.push('платено досега: ' + r.paid.toFixed(2) + ' €');
+            if (c.datasetIndex === 0 && r.due > 0.005 && r.rest > 0.005) out.push('от тях дължимо вече сега: ' + fmt(r.due));
+            if (r.paid != null) out.push('платено досега: ' + fmt(r.paid));
+            if (r.paidThrough) out.push('платено до: ' + monthNameLong_(r.paidThrough));
             return out; }
         } }
       },
       scales: {
-        x: { stacked: true, suggestedMax: maxVal * 1.35, ticks: { color: '#7a85a8', callback: function(v){ return v + ' €'; } }, grid: { color: 'rgba(25,33,102,0.08)' } },
+        x: { stacked: true, suggestedMax: narrowAdm ? maxVal : maxVal * 1.35, /* на тесен екран етикетите са в полето вдясно */ ticks: { color: '#7a85a8', callback: function(v){ return v + ' €'; } }, grid: { color: 'rgba(25,33,102,0.08)' } },
         y: { stacked: true, ticks: { color: '#192166', font: { weight: '700' } }, grid: { display: false } }
       }
     }
@@ -570,19 +612,20 @@ function loadXlsx_(){
 }
 function downloadDebtorsExcel(){
   var d = window.__lastData || {};
-  var list = d.quarterList || [];
+  // quarterAll = ВСИЧКИ обекти (вкл. платилите напред, сума 0 → "-"); резервно quarterList при стар бекенд.
+  var list = (d.quarterAll && d.quarterAll.length) ? d.quarterAll : (d.quarterList || []);
   if (!list.length) { alert('Няма данни за сваляне.'); return; }
   var today = new Date();
   var stamp = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
-  // Редовете със "следв." (нищо за текущото тримесечие) остават със сума 0 → показва се "-".
-  var rows = list.map(function(x){ return [x.unit, Math.round((x.due + x.rest) * 100) / 100, x.paid != null ? x.paid : 0]; });
+  // Сумата е само за ТЕКУЩОТО тримесечие (дължимо сега + остатък до края му); останалите обекти — със сума 0 → "-".
+  var rows = list.map(function(x){ return [x.unit, x.amount != null ? x.amount : Math.round((x.due + x.rest) * 100) / 100, x.paid != null ? x.paid : 0, x.paidThrough ? monthShort_(x.paidThrough) : '—']; });
   var btn = document.getElementById('dlExcelBtn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Подготвям…'; }
   function done(){ if (btn) { btn.disabled = false; btn.textContent = '⬇️ Свали Excel'; } }
   loadXlsx_().then(function(XLSX){
-    var aoa = [['Обект', 'Дължима сума (€)', 'Платено досега (€)']].concat(rows);
+    var aoa = [['Обект', 'Дължима сума (€)', 'Платено досега (€)', 'Платено до']].concat(rows);
     var ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws['!cols'] = [{ wch: 26 }, { wch: 20 }, { wch: 20 }];
+    ws['!cols'] = [{ wch: 26 }, { wch: 20 }, { wch: 20 }, { wch: 14 }];
     for (var r = 2; r <= aoa.length; r++) {
       if (ws['B' + r]) ws['B' + r].z = '#,##0.00;(#,##0.00);-';
       if (ws['C' + r]) ws['C' + r].z = '#,##0.00;(#,##0.00);-';
@@ -591,7 +634,7 @@ function downloadDebtorsExcel(){
     XLSX.utils.book_append_sheet(wb, ws, 'Дължимо');
     XLSX.writeFile(wb, 'Dalzhimo_Vhod_B_' + stamp + '.xlsx');
   }).catch(function(){
-    var csv = '﻿Обект;Дължима сума (€);Платено досега (€)\r\n' + rows.map(function(r){ return r[0] + ';' + r[1].toFixed(2).replace('.', ',') + ';' + r[2].toFixed(2).replace('.', ','); }).join('\r\n');
+    var csv = '﻿Обект;Дължима сума (€);Платено досега (€);Платено до\r\n' + rows.map(function(r){ return r[0] + ';' + r[1].toFixed(2).replace('.', ',') + ';' + r[2].toFixed(2).replace('.', ',') + ';' + r[3]; }).join('\r\n');
     var a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     a.download = 'Dalzhimo_Vhod_B_' + stamp + '.csv';
@@ -799,7 +842,10 @@ function render(d){
     // ФРО = Фонд ремонт и обновяване; ФУП = Фонд управление и поддръжка (етикет като при Вход А, 07.10.2026).
     return '<div class="b-sub"><div>ФРО: <b>' + fmt(fro || 0) + '</b></div><div>ФУП: <b>' + fmt(tup || 0) + '</b></div></div>';
   }
-  var budgetHtml = '<div class="budget-grid">'
+  // Период на сумите: от първия месец с данни до днес (иначе "Приходи 45 451 €" се чете като "тази година").
+  var trendStart = (d.budgetTrend && d.budgetTrend.length) ? d.budgetTrend[0].month : null;
+  var budgetHtml = (trendStart ? '<div style="font-size:12px;color:var(--muted);margin-top:-8px;margin-bottom:12px">Общо от ' + escapeHtml(monthNameLong_(trendStart)) + ' до днес.</div>' : '')
+    + '<div class="budget-grid">'
     + '<div class="budget-card"><div class="b-label">Приходи</div><div class="b-val inc">' + fmt(totals.income) + '</div>' + subHtml(d.froCollected, d.maintenanceCollected) + '</div>'
     + '<div class="budget-card"><div class="b-label">Разходи</div><div class="b-val exp">' + fmt(totals.expense) + '</div>' + subHtml(d.froExpense, d.maintenanceExpense) + '</div>'
     + '<div class="budget-card"><div class="b-label">Каса</div><div class="b-val bal">' + fmt(totals.balance) + '</div>' + subHtml(d.froBalance, d.maintenanceBalance) + '</div>'
@@ -819,6 +865,8 @@ function render(d){
     rateCardHtml = '<div class="budget-card budget-rate" title="' + escapeHtml(allYears) + '">'
       + '<div class="b-label">Събираемост</div><div class="b-val ' + rateCls + '">' + pctTxt(cr.pct) + '</div>'
       + '<div class="b-sub"><div>Събрано: <b>' + fmt(cr.collected) + '</b></div><div>Начислено: <b>' + fmt(cr.charged) + '</b></div></div>'
+      // "Събрано" е само от сегашните собственици (от "Такса дължима от"), затова може да е по-малко от "Приходи".
+      + '<div class="b-note">от сегашните собственици — без плащания на предишни</div>'
       + '</div>';
   }
   var dueCardHtml = '';
@@ -830,18 +878,22 @@ function render(d){
       + '<div class="b-note">' + escapeHtml(toNote) + '</div>'
       + '</div>';
   }
-  // Прогноза за следващата година (под "Каса") — само резултатът (приходи − разходи), ФРО/ФУП отдолу;
-  // подробностите — при задържане (title). Логиката е в buildForecast_ в Code_vhod_b.gs.
+  // Прогноза за следващата година (под "Каса", 22.11.2026 — като Вход А): водещото число е резултатът за ФУП
+  // (текущите разходи, които таксата трябва да покрие), ФРО е отделно отдолу. Общата сума не се показва —
+  // излишъкът във ФРО (за ремонти) може да скрие дефицит във ФУП. Общото е в title. Логиката е в buildForecast_.
   var fcCardHtml = '';
   var fc = d.forecast;
   if (fc && fc.result) {
     var sgn = function(v){ return (v > 0.005 ? '+' : '') + fmt(v); };
+    var signCls = function(v){ return v >= -0.005 ? 'pos' : 'neg'; };
     var fcTitle = 'Очаквани приходи: ' + fmt(fc.income.total) + ' (при ' + String(fc.collectionPct).replace('.', ',') + ' % събираемост)'
-      + '\nОчаквани разходи: ' + fmt(fc.expense.total) + ' (по последните 12 месеца + планирани ремонти)';
+      + '\nОчаквани разходи: ' + fmt(fc.expense.total) + ' (по последните 12 месеца + планирани ремонти)'
+      + '\nОбщо (ФУП + ФРО): ' + sgn(fc.result.total);
     fcCardHtml = '<div class="budget-card budget-fc" title="' + escapeHtml(fcTitle) + '">'
       + '<div class="b-label">Прогноза ' + escapeHtml(fc.year) + '</div>'
-      + '<div class="b-val ' + (fc.result.total >= 0 ? 'inc' : 'exp') + '">' + sgn(fc.result.total) + '</div>'
-      + '<div class="b-sub"><div>ФРО: <b>' + sgn(fc.result.fro) + '</b></div><div>ФУП: <b>' + sgn(fc.result.fup) + '</b></div></div>'
+      + '<div class="b-val ' + (fc.result.fup >= -0.005 ? 'inc' : 'exp') + '">' + sgn(fc.result.fup) + '</div>'
+      + '<div class="b-note">ФУП — текущи разходи</div>'
+      + '<div class="b-sub"><div>ФРО: <b class="' + signCls(fc.result.fro) + '">' + sgn(fc.result.fro) + '</b></div></div>'
       + '</div>';
   }
   if (rateCardHtml || dueCardHtml || fcCardHtml) budgetHtml += '<div class="budget-due-row">' + rateCardHtml + dueCardHtml + fcCardHtml + '</div>';
@@ -924,38 +976,53 @@ function render(d){
     ? '<div class="report-list">' + protocolsHtml + '</div>'
     : '<div style="color:var(--muted);font-size:13px">Няма качени протоколи все още.</div>');
 
-  // Задължение за тримесечие (по решение на ОС таксите се плащат на тримесечия) — логиката е в бекенда
-  // (quarterObligation_/combineQuarters_). При няколко обекта сумата е общо за всички.
-  var quarterChipHtml = '';
-  if (d.quarter && d.quarter.startKey) {
-    var q = d.quarter, qLabel = quarterLabel_(q.startKey, q.endKey);
-    if (q.covered) {
-      quarterChipHtml = '<div class="stat-chip full"><div class="stat-num" style="color:var(--green,#3d9e4a)">✓</div>'
-        + '<div class="stat-info"><strong style="color:var(--text)">Тримесечия — платено</strong> — текущото и следващото тримесечие (до ' + escapeHtml(quarterLabel_(q.endKey, q.endKey).split(' – ')[1]) + ') са покрити.</div></div>';
-    } else {
-      var qTitle = q.isNext ? 'Следващо тримесечие (' + qLabel + ')' : 'До края на тримесечието (' + qLabel + ')';
-      var qDesc = q.isNext
-        ? 'текущото тримесечие е платено; това е сумата за следващото (без вече направени авансови плащания).'
-        : 'дължимото към момента (' + fmt(q.dueNow) + ') плюс оставащите месеци до края на тримесечието.';
-      quarterChipHtml = '<div class="stat-chip full' + (!q.isNext && q.dueNow > 0 ? ' warn' : '') + '">'
-        + '<div class="stat-num">' + fmt(q.amount) + '</div>'
-        + '<div class="stat-info"><strong style="color:var(--text)">' + qTitle + '</strong> — ' + qDesc + '</div></div>';
-    }
+  var s = d.stats || {};
+
+  // ---- Една сума за плащане (22.11.2026, като Вход А) ----
+  // По решение на ОС таксата се плаща за тримесечие напред, затова картата показва ЕДНА сума вместо
+  // "дължимо към момента" + отделна карта "до края на тримесечието". Сумите идват от бекенда
+  // (quarterObligation_/combineQuarters_ — при няколко обекта сумата е общо за всички; кредитът на един
+  // обект НЕ покрива друг). Тук само се избира какво да се покаже:
+  //   'due'   — текущото тримесечие не е платено: сума до края му; d.due от нея е вече просрочено
+  //   'next'  — текущото е платено: следващата вноска (за следващото тримесечие)
+  //   'paid'  — платено е и следващото тримесечие
+  //   'plain' — няма данни за тримесечие (стар бекенд): старото "дължимо към момента"
+  var q = d.quarter, pay = { mode: 'plain', amount: due, fromKey: d.unpaidFrom, toKey: d.unpaidTo };
+  if (q && q.startKey) {
+    var afterPaid = d.paidThrough ? nextMonthKey_(d.paidThrough) : null; // при няколко обекта paidThrough е най-ранният
+    if (q.covered) pay = { mode: 'paid', amount: 0 };
+    else if (q.isNext) pay = { mode: 'next', amount: q.amount, fromKey: afterPaid || q.startKey, toKey: q.endKey };
+    else pay = { mode: 'due', amount: q.amount, overdue: due, fromKey: afterPaid || d.unpaidFrom || q.startKey, toKey: q.endKey };
+  }
+  var dueBlockHtml, allTxt = multi ? ' (общо)' : '';
+  if (pay.mode === 'due') {
+    var om = s.overdueMonths || 0;
+    var dueMeta = pay.overdue > 0.005
+      ? 'от тях ' + fmt(pay.overdue) + ' са просрочени' + (!multi && om > 0 ? ' (' + om + ' ' + (om === 1 ? 'месец' : 'месеца') + ')' : '')
+      : fmt(d.feePerMonth) + '/мес. — оставащите месеци до края на тримесечието';
+    dueBlockHtml = dueBlock_('За плащане до края на ' + monthNameLong_(pay.toKey) + allTxt, dueMeta, fmt(pay.amount), pay.overdue > 0.005 ? 'owe' : 'soon');
+  } else if (pay.mode === 'next') {
+    dueBlockHtml = dueBlock_('Следваща вноска за ' + periodText_(pay.fromKey, pay.toKey) + allTxt, 'Текущото тримесечие е платено ✓', fmt(pay.amount), 'next');
+  } else if (pay.mode === 'paid') {
+    dueBlockHtml = dueBlock_('Платено е и следващото тримесечие', d.paidThrough ? 'Платено до ' + monthNameLong_(d.paidThrough) + ' ✓' : '', 'Всичко платено', 'zero');
+  } else {
+    dueBlockHtml = dueBlock_('Дължимо към момента' + allTxt, fmt(d.feePerMonth) + '/мес.' + (!multi && s.overdueMonths > 0 ? ' · ' + s.overdueMonths + ' неплатени месеца' : ''), due > 0 ? fmt(due) : 'Всичко платено', due > 0 ? 'owe' : 'zero');
   }
 
-  var s = d.stats || {};
-  var statStripHtml = !d.hasUnits ? '' : '<div class="stat-strip">'
-    + '<div class="stat-chip' + (s.paidThisMonth === 0 ? ' warn' : '') + '">'
-      + '<div class="stat-num">' + (s.paidThisMonth||0) + ' <span style="font-size:13px;color:var(--muted);font-weight:500">от ' + (s.totalUnits||0) + '</span></div>'
-      + '<div class="stat-label">обекта с плащане този месец</div>'
-      + '<div class="stat-info">Без имена — само по номер на обект.</div>'
+  // Брой обекти с напълно платено ТЕКУЩО тримесечие (stats.paidCurrentQuarter) — вместо "X обекта с плащане този
+  // месец" (плащанията се нанасят веднъж месечно, затова почти винаги беше 0–1). Резервно paidThisMonth — само ако
+  // бекендът още е стар. Махнати са чиповете "твои неплатени месеца" и "Тримесечие" — сумата вече е в картата.
+  var curQ = d.quarterPeriods && d.quarterPeriods.current;
+  var hasPq = s.paidCurrentQuarter != null;
+  var pqNum = hasPq ? s.paidCurrentQuarter : (s.paidThisMonth || 0);
+  var pqLabel = hasPq
+    ? 'Платили изцяло тримесечието' + (curQ ? ' ' + quarterLabel_(curQ.startKey, curQ.endKey) : '')
+    : 'Обекти с плащане този месец';
+  var statStripHtml = '<div class="stat-strip">'
+    + '<div class="stat-chip full' + (pqNum === 0 ? ' warn' : '') + '">'
+      + '<div class="stat-num">' + pqNum + ' <span style="font-size:13px;color:var(--muted);font-weight:500">от ' + (s.totalUnits||0) + '</span></div>'
+      + '<div class="stat-info"><strong style="color:var(--text)">' + escapeHtml(pqLabel) + '</strong><br>Без имена — само брой обекти. Плащанията се нанасят веднъж месечно.</div>'
       + '</div>'
-    + '<div class="stat-chip' + (s.overdueMonths > 0 ? ' warn' : '') + '">'
-      + '<div class="stat-num">' + (s.overdueMonths||0) + ' <span style="font-size:13px;color:var(--muted);font-weight:500">от ' + (s.monthsSinceStart||0) + '</span></div>'
-      + '<div class="stat-label">твои неплатени месеца</div>'
-      + '<div class="stat-info">Второто число е откога дължиш такса.</div>'
-      + '</div>'
-    + quarterChipHtml
     + '</div>';
 
   var runwayHtml = '';
@@ -1001,41 +1068,67 @@ function render(d){
     + '<div class="signal-form-note">Сигналът отива при домоуправителя и получава статус тук.</div>'
     + '</div>';
 
-  var lastUpdatedText = d.lastUpdated ? formatDateShort(d.lastUpdated) : null;
-  var updatedBadgeHtml = lastUpdatedText ? '<div class="updated-badge"><span class="dot"></span>Обновено ' + escapeHtml(lastUpdatedText) + '</div>' : '<span></span>';
+  // "Данни към" — обща дата за всички (d.dataAsOf: най-късният запис в ПЛАЩАНИЯ/БЮДЖЕТ). Заменя личното
+  // "Обновено <дата на последното плащане>", което при обобщените редове от отчета изглеждаше остаряло.
+  // Резервно (стар бекенд): "Последно плащане <дата>".
+  var asOfBadgeHtml = '';
+  if (d.dataAsOf) asOfBadgeHtml = '<div class="updated-badge" title="Последният нанесен запис в таблицата"><span class="dot"></span>Данни към ' + escapeHtml(d.dataAsOf) + '</div>';
+  else if (d.lastUpdated) asOfBadgeHtml = '<div class="updated-badge"><span class="dot"></span>Последно плащане ' + escapeHtml(formatDateShort(d.lastUpdated)) + '</div>';
+  // "Платено до" — последен напълно покрит месец (при няколко обекта — най-ранният); зелено = до текущия месец
+  // или напред, кехлибарено = назад.
+  var nowD = new Date(), nowKey = nowD.getFullYear() + '-' + String(nowD.getMonth() + 1).padStart(2, '0');
+  var paidBadgeHtml = '';
+  if (d.paidThrough) {
+    paidBadgeHtml = '<div class="paid-badge' + (d.paidThrough < nowKey ? ' behind' : '') + '" title="Последен напълно покрит месец' + (multi ? ' (най-ранният от обектите)' : '') + '">Платено до ' + escapeHtml(monthNameLong_(d.paidThrough)) + '</div>';
+  }
+  var badgesHtml = (asOfBadgeHtml || paidBadgeHtml) ? '<div class="badges">' + asOfBadgeHtml + paidBadgeHtml + '</div>' : '<span></span>';
 
-  // Разбивка по обект, когато един собственик има няколко (един код за всички).
-  var splitHtml = '';
+  // Разбивка по обект, когато един собственик има няколко (един код за всички). Сумите на редовете дават
+  // сумата в картата: при 'due' — за текущото тримесечие (owedCur), при 'next' — за следващото (owedNext).
+  var splitHtml = '', payUnits = [];
   if (multi) {
     splitHtml = '<div class="units-split">' + d.units.map(function(u){
+      var hasQ = u.owedCur != null, amt, cls, meta = [fmt(u.fee) + '/мес.'];
+      var payAmt = pay.mode === 'due' && hasQ ? u.owedCur : (pay.mode === 'next' && hasQ ? u.owedNext : u.due);
+      if (payAmt > 0.009) payUnits.push(u.unit); // в основанието — само обектите, за които се плаща
+      if (pay.mode === 'due' && hasQ) { amt = u.owedCur; cls = u.due > 0.009 ? 'owe' : (amt > 0.009 ? 'soon' : 'zero'); if (u.due > 0.009) meta.push('просрочени ' + fmt(u.due)); }
+      else if (pay.mode === 'next' && hasQ) { amt = u.owedNext; cls = amt > 0.009 ? 'next' : 'zero'; }
+      else if (pay.mode === 'paid') { amt = 0; cls = 'zero'; }
+      else { amt = u.due; cls = u.due > 0.009 ? 'owe' : 'zero'; if (u.overdueMonths > 0) meta.push(u.overdueMonths + ' неплатени месеца'); }
+      if (u.paidThrough) meta.push('платено до ' + monthNameLong_(u.paidThrough));
       return '<div class="units-split-row"><div class="units-split-name">' + escapeHtml(u.unit)
-        + '<span class="units-split-meta">' + fmt(u.fee) + '/мес.' + (u.overdueMonths > 0 ? ' · ' + u.overdueMonths + ' неплатени месеца' : '') + '</span></div>'
-        + '<div class="units-split-amt ' + (u.due > 0.009 ? 'owe' : 'zero') + '">' + (u.due > 0.009 ? fmt(u.due) : 'Платено') + '</div></div>';
+        + '<span class="units-split-meta">' + escapeHtml(meta.join(' · ')) + '</span></div>'
+        + '<div class="units-split-amt ' + cls + '">' + (amt > 0.009 ? fmt(amt) : 'Платено') + '</div></div>';
     }).join('') + '</div>';
   }
 
+  // Полето "Как да платя" се показва при всяка сума за плащане — и за следващото тримесечие (преди се
+  // показваше само при просрочие, и платилият текущото тримесечие нямаше откъде да види IBAN-а).
   var payBoxHtml = '';
-  if (due > 0 && d.bankIban && d.bankIban.toUpperCase().indexOf('ПОПЪЛНИ') === -1) {
-    var payRef = buildPayRef_(d.unit, d.unpaidFrom, d.unpaidTo);
+  if (pay.mode !== 'paid' && pay.amount > 0.005 && d.bankIban && d.bankIban.toUpperCase().indexOf('ПОПЪЛНИ') === -1) {
+    // При няколко обекта, от които само някои дължат — основанието назовава само тях (иначе плащането за Б13
+    // изглежда като плащане и за платения Б12).
+    var payUnitLabel = (multi && payUnits.length && payUnits.length < d.units.length) ? unitsLabelFront_(payUnits) : d.unit;
+    var payRef = buildPayRef_(payUnitLabel, pay.fromKey, pay.toKey);
+    var ibanShown = String(d.bankIban).replace(/\s+/g, '').replace(/(.{4})/g, '$1 ').trim(); // по 4 знака; копира се без интервали
     payBoxHtml = '<div class="pay-box"><div class="pay-heading">Как да платя</div>'
-      + '<div class="pay-field"><div class="pay-field-main"><div class="pay-label">IBAN за такси</div><div class="pay-val" id="payIban">' + escapeHtml(d.bankIban) + '</div></div>'
+      + '<div class="pay-field"><div class="pay-field-main"><div class="pay-label">Сума</div><div class="pay-val pay-val-ref">' + escapeHtml(fmt(pay.amount)) + '</div></div></div>'
+      + '<div class="pay-field"><div class="pay-field-main"><div class="pay-label">IBAN за такси</div><div class="pay-val" id="payIban">' + escapeHtml(ibanShown) + '</div></div>'
       + '<button class="pay-copy" onclick="copyIban()">📋 Копирай</button></div>'
       + '<div class="pay-field"><div class="pay-field-main"><div class="pay-label">Основание за превода</div><div class="pay-val pay-val-ref" id="payRef">' + escapeHtml(payRef) + '</div></div>'
       + '<button class="pay-copy alt" onclick="copyRef()">📋 Копирай</button></div>'
       + '<div class="pay-copied" id="payCopied">✅ IBAN копиран</div>'
       + '<div class="pay-copied" id="payRefCopied">✅ Основанието е копирано</div>'
-      + '<div class="pay-note">Плащанията се нанасят веднъж месечно, до 10-о число за предходния месец. Задължително посочвай <strong>Вход Б</strong> и обекта в основанието, както и периода, за който плащаш — сметката е обща за няколко входа.</div>'
+      + '<div class="pay-note">Копирай основанието оттук — в него са <strong>Вход Б</strong>, обектът и периодът, за да се разпознае плащането (сметката е обща за няколко входа). Плащанията се нанасят веднъж месечно, до 10-о число.</div>'
       + '</div>';
   }
 
   var unitCardHtml;
   if (d.hasUnits) {
     unitCardHtml = '<div class="unit-card">'
-      + '<div class="eyebrow-row"><div class="eyebrow">' + (multi ? 'Твоите имоти' : 'Твоят имот') + '</div>' + updatedBadgeHtml + '</div>'
+      + '<div class="eyebrow-row"><div class="eyebrow">' + (multi ? 'Твоите имоти' : 'Твоят имот') + '</div>' + badgesHtml + '</div>'
       + '<h2>' + escapeHtml(d.unit) + '</h2>'
-      + '<div class="due"><div class="due-left"><div class="due-label">Дължимо към момента' + (multi ? ' (общо)' : '') + '</div>'
-      + '<div class="due-meta">' + fmt(d.feePerMonth) + '/мес.' + (!multi && s.overdueMonths > 0 ? ' · ' + s.overdueMonths + ' неплатени месеца' : '') + '</div></div>'
-      + '<div class="due-amt ' + (due > 0 ? 'owe' : 'zero') + '">' + (due > 0 ? fmt(due) : 'Всичко платено') + '</div></div>'
+      + dueBlockHtml
       + splitHtml
       + payBoxHtml
       + '</div>';
@@ -1137,7 +1230,7 @@ function drawCharts(d){
       return '<div class="debtor-bar-row">'
         + '<div class="debtor-bar-id">' + escapeHtml(shortUnit(x.unit)) + '</div>'
         + '<div class="debtor-bar-track"><div class="debtor-bar-fill" style="width:' + pct + '%;background:' + color + '"></div></div>'
-        + '<div class="debtor-bar-sum">' + x.due.toFixed(2) + ' €</div>'
+        + '<div class="debtor-bar-sum">' + fmt(x.due) + '</div>'
         + '</div>';
     }).join('') + '</div>';
   } else {
