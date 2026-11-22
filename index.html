@@ -107,6 +107,7 @@
   .budget-due-row .budget-fc{grid-column:3}
   .b-val.due{color:var(--amber)}
   .budget-card .b-note{margin-top:5px;font-size:9px;color:var(--muted);line-height:1.35}
+  .admin-note{font-size:11.5px;color:#8a5205;background:var(--amber-tint);border:1px solid rgba(217,119,6,.3);border-radius:10px;padding:9px 12px;margin-top:8px;line-height:1.5;text-align:left}
 
   .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:0 2px 10px rgba(25,33,102,0.05)}
   .chart-box{position:relative;width:100%;height:220px}
@@ -844,6 +845,33 @@ function render(d){
       + '</div>';
   }
   if (rateCardHtml || dueCardHtml || fcCardHtml) budgetHtml += '<div class="budget-due-row">' + rateCardHtml + dueCardHtml + fcCardHtml + '</div>';
+  // (22.11.2026) Диагностика само за Касиер/Домоуправител: листът ПЕРА, редове с BGN след еврото и
+  // "Проблеми в данните" (dataIssues) от бекенда. Текстът идва от таблицата — escape-ва се.
+  if (d.isAdmin) {
+    var admNotes = [];
+    if (d.fundMapInfo) {
+      var fm = d.fundMapInfo, unm = d.unmappedCategories || [], fmNote = '';
+      if (!fm.found) fmNote = 'Лист <b>ПЕРА</b> не е намерен — всички разходи се броят като ФУП.';
+      else if (!fm.rows) fmNote = 'Лист <b>ПЕРА</b> е намерен, но няма разпознати редове (колона A = категория, колона B = „ФРО“ или „Поддръжка“).';
+      else if (unm.length) fmNote = 'Категории без перо в листа <b>ПЕРА</b> (броят се като ФУП): <b>' + unm.map(escapeHtml).join(', ') + '</b>.';
+      if (fmNote) admNotes.push(fmNote);
+    }
+    var ba = d.bgnAfterEuro;
+    if (ba && (ba.payments || ba.budget)) {
+      var baParts = [];
+      if (ba.payments) baParts.push('<b>' + ba.payments + '</b> в ПЛАЩАНИЯ');
+      if (ba.budget) baParts.push('<b>' + ba.budget + '</b> в БЮДЖЕТ');
+      admNotes.push('Редове с валута <b>BGN</b> и дата от 01.01.2026 нататък: ' + baParts.join(' и ')
+        + '. Сумите им се делят на 1,95583. Ако плащането е в евро, смени валутата на <b>EUR</b>.');
+    }
+    if (d.dataIssues && d.dataIssues.length) {
+      admNotes.push('<b>Проблеми в данните (' + d.dataIssues.length + ')</b> — оправи ги в таблицата:'
+        + '<div style="margin-top:4px">' + d.dataIssues.map(function(t){ return '• ' + escapeHtml(t); }).join('<br>') + '</div>');
+    }
+    admNotes.forEach(function(t){
+      budgetHtml += '<div class="admin-note">⚠️ ' + t + ' <span style="opacity:.75">(виждат само Касиер/Домоуправител)</span></div>';
+    });
+  }
 
   var yearly = yearlyFromTrend(d.budgetTrend);
   var yearlyRowsHtml = yearly.map(function(y){
