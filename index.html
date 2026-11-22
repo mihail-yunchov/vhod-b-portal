@@ -12,8 +12,8 @@
 <meta name="apple-mobile-web-app-title" content="Вход Б">
 <title>Вход Б — Grand Azurro</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,600&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js" integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
   :root{
     --navy:#192166; --teal:#00C4D0; --teal-deep:#009EBD;
@@ -336,7 +336,7 @@ var SHOW_YEARLY = false;        // "Годишен отчет"
 var FULL_VIEW_ROLE = 'Касиер';  // ролята в ДОСТЪП (колона I), която вижда и скритите финансови секции
 
 function fmt(n){ return (Number(n)||0).toLocaleString('bg-BG',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €'; }
-if (window.ChartDataLabels) { Chart.register(ChartDataLabels); }
+if (window.Chart && window.ChartDataLabels) { Chart.register(ChartDataLabels); }
 // "Окт – Дек 2026" / "Дек 2026 – Фев 2027" от два ключа "YYYY-MM" (за тримесечията)
 // Кратък формат за етикети в графики: 17 120 → "17,1k €", 397 → "397 €"
 function shortEur_(v){
@@ -560,6 +560,8 @@ function loadXlsx_(){
     if (window.XLSX) return resolve(window.XLSX);
     var sc = document.createElement('script');
     sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    sc.integrity = 'sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA=='; // проверка на целостта (SRI)
+    sc.crossOrigin = 'anonymous';
     sc.onload = function(){ window.XLSX ? resolve(window.XLSX) : reject(new Error('xlsx')); };
     sc.onerror = function(){ reject(new Error('xlsx load')); };
     document.head.appendChild(sc);
@@ -598,6 +600,13 @@ function downloadDebtorsExcel(){
 
 var IS_DEMO_MODE = SCRIPT_URL.indexOf('PASTE_YOUR') !== -1;
 
+// Всички заявки към бекенда — POST (кодът не остава в адреса, логовете и историята).
+// Тялото е form-encoded → без CORS preflight; Apps Script го чете в e.parameter.
+async function apiCall_(params){
+  var res = await fetch(SCRIPT_URL, { method: 'POST', body: new URLSearchParams(params) });
+  return res.json();
+}
+
 async function loadStatus(code, silent){
   var errEl = document.getElementById('err');
   if (!silent) errEl.style.display = 'none';
@@ -606,8 +615,7 @@ async function loadStatus(code, silent){
     return false;
   }
   try {
-    var res = await fetch(SCRIPT_URL + '?action=getStatus&code=' + encodeURIComponent(code));
-    var data = await res.json();
+    var data = await apiCall_({ action: 'getStatus', code: code });
     if (!data.ok) {
       if (!silent) { errEl.textContent = data.error || 'Невалиден код.'; errEl.style.display = 'block'; }
       return false;
@@ -640,8 +648,7 @@ async function submitSignal(){
   var text = textEl.value.trim();
   if (!text) { msgEl.className = 'signal-msg error'; msgEl.textContent = 'Моля, опиши проблема.'; msgEl.style.display = 'block'; return; }
   try {
-    var res = await fetch(SCRIPT_URL + '?action=submitSignal&code=' + encodeURIComponent(window.__activeCode) + '&text=' + encodeURIComponent(text) + '&category=' + encodeURIComponent(catEl.value));
-    var data = await res.json();
+    var data = await apiCall_({ action: 'submitSignal', code: window.__activeCode, text: text, category: catEl.value });
     if (data.ok) {
       msgEl.className = 'signal-msg ok'; msgEl.textContent = 'Сигналът е изпратен успешно.'; msgEl.style.display = 'block';
       textEl.value = '';
@@ -656,8 +663,7 @@ async function submitSignal(){
 
 async function resolveSignal(id){
   try {
-    var res = await fetch(SCRIPT_URL + '?action=resolveSignal&code=' + encodeURIComponent(window.__activeCode) + '&id=' + encodeURIComponent(id));
-    var data = await res.json();
+    var data = await apiCall_({ action: 'resolveSignal', code: window.__activeCode, id: id });
     if (data.ok) { await loadStatus(window.__activeCode, true); }
     else { alert(data.error || 'Грешка.'); }
   } catch (e) { alert('Грешка при връзка.'); }
@@ -675,8 +681,7 @@ function downloadCsv_(filename, rows){
 }
 async function exportCsv(){
   try {
-    var res = await fetch(SCRIPT_URL + '?action=exportData&code=' + encodeURIComponent(window.__activeCode));
-    var data = await res.json();
+    var data = await apiCall_({ action: 'exportData', code: window.__activeCode });
     if (!data.ok) { alert(data.error || 'Грешка при износ.'); return; }
     var payRows = [['Дата','Обект','Сума','Валута','Начин','Бележка']].concat(
       (data.payments||[]).map(function(p){ return [formatDateShort(p.date), p.unit, p.amount, p.currency, p.method, p.note]; })
@@ -946,7 +951,7 @@ function render(d){
   var signalStatusLabelMap = { "Нов": "Нов", "В процес": "В работа", "Решен": "Решен" };
   var signalsListHtml = (d.signals || []).map(function(sg){
     var cls = statusClassMap[sg.status] || 'new';
-    var resolveBtn = (d.isAdmin && sg.status !== 'Решен') ? '<button class="signal-resolve" onclick="resolveSignal(\'' + escapeHtml(sg.id) + '\')">Маркирай решен</button>' : '';
+    var resolveBtn = (d.isAdmin && sg.status !== 'Решен') ? '<button class="signal-resolve" data-id="' + escapeHtml(sg.id) + '" onclick="resolveSignal(this.getAttribute(\'data-id\'))">Маркирай решен</button>' : '';
     return '<div class="signal-row">'
       + '<span class="signal-status ' + cls + '">' + escapeHtml(signalStatusLabelMap[sg.status] || sg.status) + '</span>'
       + '<div style="flex:1;min-width:0"><div class="signal-text">' + escapeHtml(sg.text) + '</div>'
