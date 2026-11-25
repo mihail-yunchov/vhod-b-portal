@@ -1121,24 +1121,28 @@ function render(d){
     }).join('') + '</div>';
   }
 
-  // Полето "Как да платя" се показва при всяка сума за плащане — и за следващото тримесечие (преди се
-  // показваше само при просрочие, и платилият текущото тримесечие нямаше откъде да види IBAN-а).
+  // Полето "Как да платя" (25.11.2026, по молба на Евелина): показва се ВИНАГИ — и когато всичко е платено (иначе
+  // платилият напред нямаше откъде да види IBAN-а). "Сума" — само ако има какво да се плаща. Основанието е само номерът
+  // на обекта ("Б12", "маг. Б3", "Б12, Б13"): дългото основание с период хората често режеха, а периодът не е верен за
+  // всеки (някои плащат на части, други — за година напред). "Б" в номера отличава входа (сметката е обща).
   var payBoxHtml = '';
-  if (pay.mode !== 'paid' && pay.amount > 0.005 && d.bankIban && d.bankIban.toUpperCase().indexOf('ПОПЪЛНИ') === -1) {
+  var hasPayAmt = pay.mode !== 'paid' && pay.amount > 0.005;
+  if ((hasPayAmt || (q && q.startKey)) && d.bankIban && d.bankIban.toUpperCase().indexOf('ПОПЪЛНИ') === -1) {
     // При няколко обекта, от които само някои дължат — основанието назовава само тях (иначе плащането за Б13
     // изглежда като плащане и за платения Б12).
-    var payUnitLabel = (multi && payUnits.length && payUnits.length < d.units.length) ? unitsLabelFront_(payUnits) : d.unit;
-    var payRef = buildPayRef_(payUnitLabel, pay.fromKey, pay.toKey);
+    var payList = !multi ? [d.unit] : ((hasPayAmt && payUnits.length && payUnits.length < d.units.length) ? payUnits : d.units.map(function(u){ return u.unit; }));
+    var payRef = payList.map(shortUnit).join(', ');
     var ibanShown = String(d.bankIban).replace(/\s+/g, '').replace(/(.{4})/g, '$1 ').trim(); // по 4 знака; копира се без интервали
     payBoxHtml = '<div class="pay-box"><div class="pay-heading">Как да платя</div>'
-      + '<div class="pay-field"><div class="pay-field-main"><div class="pay-label">Сума</div><div class="pay-val pay-val-ref">' + escapeHtml(fmt(pay.amount)) + '</div></div></div>'
+      + (hasPayAmt ? '<div class="pay-field"><div class="pay-field-main"><div class="pay-label">Сума</div><div class="pay-val pay-val-ref">' + escapeHtml(fmt(pay.amount)) + '</div></div></div>' : '')
       + '<div class="pay-field"><div class="pay-field-main"><div class="pay-label">IBAN за такси</div><div class="pay-val" id="payIban">' + escapeHtml(ibanShown) + '</div></div>'
       + '<button class="pay-copy" onclick="copyIban()">📋 Копирай</button></div>'
       + '<div class="pay-field"><div class="pay-field-main"><div class="pay-label">Основание за превода</div><div class="pay-val pay-val-ref" id="payRef">' + escapeHtml(payRef) + '</div></div>'
       + '<button class="pay-copy alt" onclick="copyRef()">📋 Копирай</button></div>'
       + '<div class="pay-copied" id="payCopied">✅ IBAN копиран</div>'
       + '<div class="pay-copied" id="payRefCopied">✅ Основанието е копирано</div>'
-      + '<div class="pay-note">Копирай основанието оттук — в него са <strong>Вход Б</strong>, обектът и периодът, за да се разпознае плащането (сметката е обща за няколко входа). Плащанията се нанасят веднъж месечно, до 10-о число.</div>'
+      + '<div class="pay-note">' + (hasPayAmt ? '' : 'В момента нямаш сума за плащане — данните са за следващото плащане. ')
+      + 'В основанието пиши само номера на обекта (с „Б“ — сметката е обща за няколко входа). Плащанията се нанасят веднъж месечно, до 10-о число.</div>'
       + '</div>';
   }
 
